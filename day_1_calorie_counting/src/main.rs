@@ -1,6 +1,7 @@
 use std::io::{BufRead, Write};
 
 fn main() {
+    //---Copy this to every puzzle program main---
     // File paths
     let relative_puzzle_path = "puzzle/";
     let input_file_path = format!("{}{}", relative_puzzle_path, "INPUT");
@@ -13,6 +14,7 @@ fn main() {
     let mut output_2_file = std::fs::File::create(output_2_path).unwrap();
     let mut reader = std::io::BufReader::new(input_file);
     let mut line = String::new();
+    //---End---
 
     //--- Day 1: Calorie Counting --- (https://adventofcode.com/2022/day/1)
     let mut top_three_most_calories: [i32; 3] = [0; 3];
