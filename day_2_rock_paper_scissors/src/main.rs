@@ -16,27 +16,36 @@ fn main() {
     let mut reader = std::io::BufReader::new(input_file);
     let mut line = String::new();
     //---End---
-    let mut total_score = 0;
+    let mut total_score_part_1 = 0;
+    let mut total_score_part_2 = 0;
     //let mut i = 0;
     while reader.read_line(&mut line).unwrap() > 0 {
         //line.pop(); //Remove trailing new-line character
         //Do stuff
         //print!("[{}]: {}", i, line);
         //i += 1;
-        let opponent = HandSign::get_hand_sign(line.chars().nth(0).unwrap()).unwrap();
-        let player = HandSign::get_hand_sign(line.chars().nth(2).unwrap()).unwrap();
-        let score = play_round(player, opponent);
-        total_score += score;
+        let first_char = line.chars().nth(0).unwrap();
+        let second_char = line.chars().nth(2).unwrap();
+        //Part one
+        let opponent = HandSign::get_hand_sign(first_char).unwrap();
+        let player_part_1 = HandSign::get_hand_sign(second_char).unwrap();
+        let score_part_1 = play_round(player_part_1, &opponent);
+        total_score_part_1 += score_part_1;
+        //Part two
+        let game_result = GameResult::get_game_result_from_char(second_char).unwrap();
+        let player_part_2 = HandSign::get_hand_sign_from_game_result(&opponent, game_result);
+        let score_part_2 = play_round(player_part_2, &opponent);
+        total_score_part_2 += score_part_2;
 
         line.clear(); //Clear line string
     }
     //Part 1
-    writeln!(output_1_file, "{}", total_score).unwrap();
+    writeln!(output_1_file, "{}", total_score_part_1).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    writeln!(output_2_file, "{}", total_score_part_2).unwrap();
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 enum HandSign {
     Rock,
     Paper,
@@ -44,7 +53,7 @@ enum HandSign {
 }
 
 impl HandSign {
-    ///Get the HandSign associated with an character from our encrypted strategy guide for playing rock, paper, scissors
+    ///Get the HandSign associated with a character from our encrypted strategy guide for playing rock, paper, scissors
     fn get_hand_sign(encrypted_character: char) -> Result<HandSign, String> {
         static VALID_CHARACTERS: [char; 6] = ['A', 'B', 'C', 'X', 'Y', 'Z'];
         if VALID_CHARACTERS.contains(&encrypted_character) {
@@ -60,8 +69,27 @@ impl HandSign {
             Err(format!("The encrypted_character ({}) is invalid. A valid encrypted_character is a member of {:?}.", encrypted_character, VALID_CHARACTERS))
         }
     }
+
+    fn get_hand_sign_from_game_result(opponent: &HandSign, game_result: GameResult) -> HandSign {
+        if game_result == GameResult::Draw {
+            return *opponent;
+        } else if game_result == GameResult::Win {
+            match opponent {
+                HandSign::Rock => HandSign::Paper,
+                HandSign::Paper => HandSign::Scissors,
+                HandSign::Scissors => HandSign::Rock,
+            }
+        } else {
+            match opponent {
+                HandSign::Rock => HandSign::Scissors,
+                HandSign::Paper => HandSign::Rock,
+                HandSign::Scissors => HandSign::Paper,
+            }
+        }
+    }
 }
 
+#[derive(PartialEq)]
 enum GameResult {
     Win,
     Lose,
@@ -70,22 +98,39 @@ enum GameResult {
 
 impl GameResult {
     ///Returns the result of a game of rock, paper, scissors
-    fn get_game_result(player: HandSign, opponent: HandSign) -> GameResult {
-        if player == opponent {
+    fn get_game_result(player: HandSign, opponent: &HandSign) -> GameResult {
+        if player == *opponent {
             GameResult::Draw
-        } else if player == HandSign::Rock && opponent == HandSign::Scissors
-            || player == HandSign::Paper && opponent == HandSign::Rock
-            || player == HandSign::Scissors && opponent == HandSign::Paper
+        } else if player == HandSign::Rock && *opponent == HandSign::Scissors
+            || player == HandSign::Paper && *opponent == HandSign::Rock
+            || player == HandSign::Scissors && *opponent == HandSign::Paper
         {
             GameResult::Win
         } else {
             GameResult::Lose
         }
     }
+
+    ///Get the GameResult associated with a character from our encrypted strategy guide for playing rock, paper, scissors (part two)
+    fn get_game_result_from_char(encrypted_character: char) -> Result<GameResult, String> {
+        static VALID_CHARACTERS: [char; 3] = ['X', 'Y', 'Z'];
+        if VALID_CHARACTERS.contains(&encrypted_character) {
+            match encrypted_character {
+                'X' => Ok(GameResult::Lose),
+                'Y' => Ok(GameResult::Draw),
+                'Z' => Ok(GameResult::Win),
+                _ => panic!(
+                    "This should never happen, something must be wrong with VALID_CHARACTERS."
+                ),
+            }
+        } else {
+            Err(format!("The encrypted_character ({}) is invalid. A valid encrypted_character is a member of {:?}.", encrypted_character, VALID_CHARACTERS))
+        }
+    }
 }
 
 ///Play a round of rock, paper, scissors, returns your score for the round
-fn play_round(player: HandSign, opponent: HandSign) -> i32 {
+fn play_round(player: HandSign, opponent: &HandSign) -> i32 {
     let hand_sign_score: i32 = match player {
         HandSign::Rock => 1,
         HandSign::Paper => 2,
