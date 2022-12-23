@@ -71,21 +71,34 @@ impl HandSign {
     }
 
     fn get_hand_sign_from_game_result(opponent: &HandSign, game_result: GameResult) -> HandSign {
-        if game_result == GameResult::Draw {
-            return *opponent;
-        } else if game_result == GameResult::Win {
-            match opponent {
-                HandSign::Rock => HandSign::Paper,
-                HandSign::Paper => HandSign::Scissors,
-                HandSign::Scissors => HandSign::Rock,
-            }
-        } else {
-            match opponent {
-                HandSign::Rock => HandSign::Scissors,
-                HandSign::Paper => HandSign::Rock,
-                HandSign::Scissors => HandSign::Paper,
-            }
+        match game_result {
+            GameResult::Win => HandSign::loses_against(*opponent),
+            GameResult::Draw => HandSign::draws_against(*opponent),
+            GameResult::Lose => HandSign::wins_against(*opponent),
         }
+    }
+
+    ///Returns the HandSign that hand_sign wins against
+    fn wins_against(hand_sign: HandSign) -> HandSign {
+        match hand_sign {
+            HandSign::Rock => HandSign::Scissors,
+            HandSign::Paper => HandSign::Rock,
+            HandSign::Scissors => HandSign::Paper,
+        }
+    }
+
+    ///Returns the HandSign that hand_sign loses against
+    fn loses_against(hand_sign: HandSign) -> HandSign {
+        match hand_sign {
+            HandSign::Rock => HandSign::Paper,
+            HandSign::Paper => HandSign::Scissors,
+            HandSign::Scissors => HandSign::Rock,
+        }
+    }
+
+    ///Returns the HandSign that hand_sign draws against
+    fn draws_against(hand_sign: HandSign) -> HandSign {
+        return hand_sign;
     }
 }
 
@@ -99,15 +112,12 @@ enum GameResult {
 impl GameResult {
     ///Returns the result of a game of rock, paper, scissors
     fn get_game_result(player: HandSign, opponent: &HandSign) -> GameResult {
-        if player == *opponent {
-            GameResult::Draw
-        } else if player == HandSign::Rock && *opponent == HandSign::Scissors
-            || player == HandSign::Paper && *opponent == HandSign::Rock
-            || player == HandSign::Scissors && *opponent == HandSign::Paper
-        {
+        if HandSign::wins_against(player) == *opponent {
             GameResult::Win
-        } else {
+        } else if HandSign::loses_against(player) == *opponent {
             GameResult::Lose
+        } else {
+            GameResult::Draw
         }
     }
 
