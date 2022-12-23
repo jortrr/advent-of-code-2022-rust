@@ -23,6 +23,7 @@ fn main() {
     let item_types = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let mut item_priority_map: HashMap<char, i32> = HashMap::new();
     let mut shared_item_priority_sum = 0;
+    let mut badge_priority_sum = 0;
 
     //Create item_priority_map
     for (i, c) in item_types.chars().enumerate() {
@@ -30,11 +31,14 @@ fn main() {
     }
 
     let mut rucksack_count = 0;
+    let mut elf_index = 0;
+    let mut elf_badge_map: HashMap<char, i32> = HashMap::new();
     while reader.read_line(&mut line).unwrap() > 0 {
         if line.chars().last().unwrap() == '\n' {
             line.pop(); //Remove trailing new-line character
         }
         //Do stuff
+        //Part 1
         let second_rucksack_compartment_start = line.len() / 2;
         let (rucksack_compartment_1, rucksack_compartment_2) =
             line.split_at(second_rucksack_compartment_start);
@@ -57,11 +61,45 @@ fn main() {
                 break;
             }
         }
+        //Part 2
+        for c in line.chars() {
+            if elf_index == 0 {
+                if !elf_badge_map.contains_key(&c) {
+                    elf_badge_map.insert(c, elf_index);
+                }
+            } else if elf_index == 1 || elf_index == 2 {
+                if let Some(v) = elf_badge_map.get(&c) {
+                    if *v == elf_index - 1 {
+                        elf_badge_map.insert(c, elf_index);
+                    }
+                    if elf_badge_map[&c] == 2 {
+                        //Elf group badge found
+                        let badge = c;
+                        let badge_priority = item_priority_map.get(&badge).unwrap();
+                        println!(
+                            "Badge found for Rucksack[{}..{}]: (b: {}, p: {})",
+                            rucksack_count - 2,
+                            rucksack_count,
+                            badge,
+                            badge_priority
+                        );
+                        badge_priority_sum += badge_priority;
+                        break;
+                    }
+                }
+            }
+        }
+        if elf_index == 2 {
+            elf_index = 0;
+            elf_badge_map.clear();
+        } else {
+            elf_index += 1;
+        }
 
         line.clear(); //Clear line string
     }
     //Part 1
     writeln!(output_1_file, "{}", shared_item_priority_sum).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    writeln!(output_2_file, "{}", badge_priority_sum).unwrap();
 }
