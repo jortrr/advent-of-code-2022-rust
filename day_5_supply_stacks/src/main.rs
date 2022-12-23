@@ -1,10 +1,7 @@
 use regex::Regex;
 use std::{
     collections::HashMap,
-    hash::Hash,
     io::{BufRead, Write},
-    num,
-    slice::SliceIndex,
 };
 
 fn main() {
@@ -25,6 +22,7 @@ fn main() {
 
     let mut we_want_the_crates: bool = true;
     let mut stacks_of_crates: HashMap<i32, Vec<char>> = HashMap::new();
+    let mut procedure_counter = 0;
     // Create a regex to match the pattern "move number from number to number"
     let regex = Regex::new(r"move (\d+) from (\d+) to (\d+)").unwrap();
     while reader.read_line(&mut line).unwrap() > 0 {
@@ -37,7 +35,7 @@ fn main() {
         //they will need to be reversed. A crate can be on index 1, 5, 9, ... (i-1%4==0).
         if we_want_the_crates {
             for (i, c) in line.chars().enumerate() {
-                println!("c: {}", c);
+                //println!("c: {}", c);
                 //There could be a crate or stack here
                 if c.is_numeric() {
                     //Its a stack, reverse the crates in stack_of_crates and go to the instruction part of the input
@@ -51,7 +49,7 @@ fn main() {
                 } else if c.is_alphabetic() {
                     //Its a crate, add it to the stack
                     let stack: i32 = (i as i32 - 1) / 4 + 1;
-                    println!("stack: {}", stack);
+                    //println!("stack: {}", stack);
                     if !stacks_of_crates.contains_key(&stack) {
                         stacks_of_crates.insert(stack, vec![c]);
                     } else {
@@ -63,7 +61,8 @@ fn main() {
                 }
             }
         } else if !line.is_empty() {
-            println!("line: {}", line);
+            println!("prodcedure[{}]: {}", procedure_counter, line);
+            procedure_counter += 1;
             //Crate stack configuration has been read in
             let numbers: Vec<i32> = regex
                 .captures(&line)
