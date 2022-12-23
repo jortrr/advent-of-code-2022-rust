@@ -61,7 +61,7 @@ fn main() {
                 }
             }
         } else if !line.is_empty() {
-            println!("prodcedure[{}]: {}", procedure_counter, line);
+            println!("procedure[{}]: {}", procedure_counter, line);
             procedure_counter += 1;
             //Crate stack configuration has been read in
             let numbers: Vec<i32> = regex
