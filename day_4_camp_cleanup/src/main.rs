@@ -18,6 +18,7 @@ fn main() {
     //---End---
 
     let mut amount_of_fully_contained_ranges = 0;
+    let mut amount_of_overlapping_ranges = 0;
     while reader.read_line(&mut line).unwrap() > 0 {
         if line.chars().last().unwrap() == '\n' {
             line.pop(); //Remove trailing new-line character
@@ -31,6 +32,7 @@ fn main() {
             .skip(1)
             .map(|c| c.unwrap().as_str().parse::<i32>().unwrap())
             .collect();
+        //Part 1
         if numbers[0] >= numbers[2] && numbers[1] <= numbers[3] {
             //First range is fuly contained in second range
             amount_of_fully_contained_ranges += 1;
@@ -38,11 +40,20 @@ fn main() {
             //Second range is fully contained in first range
             amount_of_fully_contained_ranges += 1;
         }
-
+        //Part 2
+        if (numbers[0] >= numbers[2] && numbers[0] <= numbers[3])
+            || (numbers[1] >= numbers[2] && numbers[1] <= numbers[3])
+        {
+            amount_of_overlapping_ranges += 1;
+        } else if (numbers[2] >= numbers[0] && numbers[2] <= numbers[1])
+            || (numbers[3] >= numbers[0] && numbers[3] <= numbers[1])
+        {
+            amount_of_overlapping_ranges += 1;
+        }
         line.clear(); //Clear line string
     }
     //Part 1
     writeln!(output_1_file, "{}", amount_of_fully_contained_ranges).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    writeln!(output_2_file, "{}", amount_of_overlapping_ranges).unwrap();
 }

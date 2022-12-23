@@ -17,8 +17,10 @@ fn main() {
     //---End---
 
     while reader.read_line(&mut line).unwrap() > 0 {
-        line.pop(); //Remove trailing new-line character
-                    //Do stuff
+        if line.chars().last().unwrap() == '\n' {
+            line.pop(); //Remove trailing new-line character
+        }
+        //Do stuff
 
         line.clear(); //Clear line string
     }
