@@ -18,6 +18,9 @@ fn main() {
 
     let mut amount_of_characters = 0;
     let mut last_four_characters: String = String::new();
+    let mut last_fourteen_characters: String = String::new();
+    let mut index_after_start_of_packet_marker = 0;
+    let mut index_after_start_of_message_marker = 0;
 
     while reader.read_line(&mut line).unwrap() > 0 {
         if line.chars().last().unwrap() == '\n' {
@@ -27,17 +30,33 @@ fn main() {
         for c in line.chars() {
             amount_of_characters += 1;
             last_four_characters += c.to_string().as_str();
+            last_fourteen_characters += c.to_string().as_str();
             if last_four_characters.len() > 4 {
                 last_four_characters.remove(0);
             }
-            if last_four_characters.len() == 4 {
+            if last_fourteen_characters.len() > 14 {
+                last_fourteen_characters.remove(0);
+            }
+            //Part 1
+            if last_four_characters.len() == 4 && index_after_start_of_packet_marker == 0 {
                 if distinct(&last_four_characters[..]) {
                     //First start-of-packet marker found
+                    index_after_start_of_packet_marker = amount_of_characters;
                     println!(
                         "Found first start-of-packet marker ({}) after processing ({}) characters.",
-                        last_four_characters, amount_of_characters
+                        last_four_characters, index_after_start_of_packet_marker
                     );
-                    break;
+                }
+            }
+            //Part 2
+            if last_fourteen_characters.len() == 14 && index_after_start_of_message_marker == 0 {
+                if distinct(&last_fourteen_characters[..]) {
+                    //First start-of-message marker found
+                    index_after_start_of_message_marker = amount_of_characters;
+                    println!(
+                        "Found first start-of-message marker ({}) after processing ({}) characters.",
+                        last_fourteen_characters, index_after_start_of_message_marker
+                    );
                 }
             }
         }
@@ -45,9 +64,9 @@ fn main() {
         line.clear(); //Clear line string
     }
     //Part 1
-    writeln!(output_1_file, "{}", amount_of_characters).unwrap();
+    writeln!(output_1_file, "{}", index_after_start_of_packet_marker).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    writeln!(output_2_file, "{}", index_after_start_of_message_marker).unwrap();
 }
 
 fn distinct(some_string: &str) -> bool {
