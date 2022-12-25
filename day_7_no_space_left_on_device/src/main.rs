@@ -1,4 +1,3 @@
-use regex::Regex;
 use std::io::{BufRead, Write};
 
 fn main() {
@@ -33,8 +32,6 @@ fn main() {
     //cd (dir) pushes (dir) to the stack. cd .. pops the stack. cd / pops all elements but the first from the stack.
     let mut directory_stack: Vec<&Directory> = vec![&root_directory];
 
-    // Create a regex to match the pattern "number-number,number-number"
-    let regex = Regex::new(r"(\d+)-(\d+),(\d+)-(\d+)").unwrap();
     while reader.read_line(&mut line).unwrap() > 0 {
         if line.chars().last().unwrap() == '\n' {
             line.pop(); //Remove trailing new-line character
