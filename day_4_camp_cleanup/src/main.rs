@@ -17,14 +17,14 @@ fn main() {
     let mut line = String::new();
     //---End---
 
+    // Create a regex to match the pattern "number-number,number-number"
+    let regex = Regex::new(r"(\d+)-(\d+),(\d+)-(\d+)").unwrap();
     let mut amount_of_fully_contained_ranges = 0;
     let mut amount_of_overlapping_ranges = 0;
     while reader.read_line(&mut line).unwrap() > 0 {
         if line.chars().last().unwrap() == '\n' {
             line.pop(); //Remove trailing new-line character
         }
-        // Create a regex to match the pattern "number-number,number-number"
-        let regex = Regex::new(r"(\d+)-(\d+),(\d+)-(\d+)").unwrap();
         let numbers: Vec<i32> = regex
             .captures(&line)
             .unwrap()
@@ -44,10 +44,12 @@ fn main() {
         if (numbers[0] >= numbers[2] && numbers[0] <= numbers[3])
             || (numbers[1] >= numbers[2] && numbers[1] <= numbers[3])
         {
+            //First range endpoint is in second range
             amount_of_overlapping_ranges += 1;
         } else if (numbers[2] >= numbers[0] && numbers[2] <= numbers[1])
             || (numbers[3] >= numbers[0] && numbers[3] <= numbers[1])
         {
+            //Second range endpoint is first range
             amount_of_overlapping_ranges += 1;
         }
         line.clear(); //Clear line string
