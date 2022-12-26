@@ -58,7 +58,7 @@ fn main() {
                     current_directory = RefCell::new(Rc::clone(&root_directory));
                 } else if dir == ".." {
                     //Move out one level
-                    let parent_directory = &root_directory.parent.borrow().upgrade();
+                    let parent_directory = &current_directory.borrow().parent.borrow().upgrade();
                     print!(
                         "Changing directory to parent ({:?}) of current directory ({})",
                         parent_directory,
@@ -152,11 +152,10 @@ fn main() {
             }
         }
         println!();
-        print_file_system(&root_directory, 0);
-        println!();
         history_counter += 1;
         line.clear(); //Clear line string
     }
+    print_file_system(&root_directory, 0);
     //Part 1
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
