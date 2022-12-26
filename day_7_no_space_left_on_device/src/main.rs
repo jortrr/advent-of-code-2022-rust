@@ -23,16 +23,11 @@ fn main() {
     //---End---
 
     //We will be filling in the details of the root_directory as we process more input
-    let mut root_directory = Rc::new(Directory {
-        name: String::from("/"),
-        size: 0,
-        directories: RefCell::new(Vec::new()),
-        files: RefCell::new(Vec::new()),
-        parent: RefCell::new(Weak::new()),
-    });
+    let mut root_directory =
+        RefCell::new(Rc::new(Directory::new(&String::from("/"), &Weak::new())));
     let mut history_counter = 0;
     //Our current directory, changed by the "$ cd (dir)" command
-    let mut current_directory = RefCell::new(Rc::clone(&root_directory));
+    let mut current_directory = RefCell::new(Rc::clone(&root_directory.borrow()));
 
     while reader.read_line(&mut line).unwrap() > 0 {
         if line.chars().last().unwrap() == '\n' {
@@ -55,13 +50,17 @@ fn main() {
                 if dir == "/" {
                     //Change directory to root
                     print!("Changing directory to root ({}) directory", dir);
-                    current_directory = RefCell::new(Rc::clone(&root_directory));
+                    current_directory = RefCell::new(Rc::clone(&root_directory.borrow()));
                 } else if dir == ".." {
                     //Move out one level
                     let parent_directory = &current_directory.borrow().parent.borrow().upgrade();
+                    let parent = match parent_directory {
+                        Some(dir) => dir.name.clone(),
+                        None => String::from("None"),
+                    };
                     print!(
-                        "Changing directory to parent ({:?}) of current directory ({})",
-                        parent_directory,
+                        "Changing directory to parent ({}) of current directory ({})",
+                        parent,
                         current_directory.borrow().name
                     );
                     if parent_directory.is_some() {
@@ -80,10 +79,10 @@ fn main() {
                     let directories_vec = directories.borrow();
                     let mut child_exists = false;
                     for i in 0..directories_vec.len() {
-                        if directories_vec.get(i).unwrap().name == dir {
+                        if directories_vec.get(i).unwrap().borrow().name == dir {
                             //We have found the child directory
                             current_directory =
-                                RefCell::new(Rc::clone(&directories_vec.get(i).unwrap()));
+                                RefCell::new(Rc::clone(&directories_vec.get(i).unwrap().borrow()));
                             child_exists = true;
                         }
                     }
@@ -106,48 +105,31 @@ fn main() {
                     "Found a child directory of current directory ({})",
                     current_directory.borrow().name
                 );
-                let child = line[4..].to_string();
-                let directories = current_directory.borrow().directories.clone();
-                let directories_vec = directories.borrow();
-                for i in 0..directories_vec.len() {
-                    if directories_vec.get(i).unwrap().name == child {
-                        //Current directory already knows child
-                        print!(", child ({}) is already known", child);
-                        break;
-                    }
+                let dir_name = line[4..].to_string();
+                if current_directory.borrow().has_directory(&dir_name) {
+                    print!(", child ({}) is already known", dir_name);
+                } else {
+                    print!(", added new child ({})", dir_name);
+                    Directory::add_directory(
+                        current_directory.clone(),
+                        &dir_name,
+                        &current_directory.borrow(),
+                    );
                 }
-                print!(", added new child ({})", child);
-                let child_dir = Rc::new(Directory::new(
-                    &child,
-                    &Rc::downgrade(&current_directory.borrow()),
-                ));
-                *child_dir.parent.borrow_mut() = Rc::downgrade(&current_directory.borrow());
-                current_directory
-                    .borrow_mut()
-                    .directories
-                    .borrow_mut()
-                    .push(child_dir);
             } else {
                 //We've found a file
                 print!("Found a file in ({})", current_directory.borrow().name);
+                //Get file_size and file_name from line
                 let white_space_index = line.find(" ").unwrap();
                 let (word_1, word_2) = line.split_at(white_space_index);
                 let file_size: i32 = word_1.parse().unwrap();
                 let file_name: String = word_2.to_string()[1..].to_string();
+
                 if current_directory.borrow().has_file(&file_name) {
                     print!(", child ({}) is already known", &file_name);
                 } else {
                     print!(", added new child ({})", &file_name);
-                    //let mut reference = current_directory.borrow_mut();
-                    //Directory::add_file(current_directory.clone(), &file_name, file_size);
-                    current_directory
-                        .borrow_mut()
-                        .files
-                        .borrow_mut()
-                        .push(File {
-                            name: file_name,
-                            size: file_size,
-                        });
+                    Directory::add_file(current_directory.clone(), &file_name, file_size);
                 }
             }
         }
@@ -155,6 +137,7 @@ fn main() {
         history_counter += 1;
         line.clear(); //Clear line string
     }
+    Directory::calculate_total_size(root_directory.clone());
     print_file_system(&root_directory, 0);
     //Part 1
     writeln!(output_1_file, "{}", "To do").unwrap();
@@ -171,8 +154,8 @@ struct File {
 #[derive(Debug)]
 struct Directory {
     name: String,
-    size: i32,
-    directories: RefCell<Vec<Rc<Directory>>>,
+    size: RefCell<i32>,
+    directories: RefCell<Vec<RefCell<Rc<Directory>>>>,
     files: RefCell<Vec<File>>,
     parent: RefCell<Weak<Directory>>,
 }
@@ -182,7 +165,7 @@ impl Directory {
     fn new(name: &String, parent: &Weak<Directory>) -> Directory {
         Directory {
             name: name.clone(),
-            size: 0,
+            size: RefCell::new(0),
             directories: RefCell::new(Vec::new()),
             files: RefCell::new(Vec::new()),
             parent: RefCell::new(parent.clone()),
@@ -202,7 +185,7 @@ impl Directory {
     ///Returns true if this Directory has a direct child Directory named dir_name
     fn has_directory(&self, dir_name: &String) -> bool {
         for dir in self.directories.borrow().iter() {
-            if dir.name == *dir_name {
+            if dir.borrow().name == *dir_name {
                 return true;
             }
         }
@@ -218,35 +201,28 @@ impl Directory {
     }
 
     ///Adds a Directory{name: dir_name, ..., parent: Rc::downgrade(parent)} to the directories field of this Directory
-    fn add_directory(&mut self, dir_name: &String, parent: &Rc<Directory>) {
-        self.directories
-            .borrow_mut()
-            .push(Rc::new(Directory::new(&dir_name, &Rc::downgrade(parent))));
-    }
-}
-/*
-    ///Recursively calculate the size of all files and directories of this directory, call on the root "/" to calculate the size of all directories
-    fn calculate_total_size(&mut self) -> i32 {
-        let size_of_all_files: i32 = self.files.iter().map(|i| i.size).sum();
-        let size_of_all_directories: i32 = self
+    fn add_directory(root: RefCell<Rc<Directory>>, dir_name: &String, parent: &Rc<Directory>) {
+        root.borrow_mut()
             .directories
-            .borrow()
-            .iter_mut()
-            .map(|i| i.calculate_total_size())
-            .sum();
-        let total_size = size_of_all_files + size_of_all_directories;
-        total_size
+            .borrow_mut()
+            .push(RefCell::new(Rc::new(Directory::new(
+                &dir_name,
+                &Rc::downgrade(parent),
+            ))));
     }
 
-    /*fn add_directory(&mut self, name: String) {
-        self.directories.push(Directory {
-            name,
-            size: 0,
-            directories: Vec::new(),
-            files: Vec::new(),
-        })
-    }*/
-}*/
+    ///Recursively calculate the size of all files and directories of this directory, call on the root "/" to calculate the size of all directories
+    fn calculate_total_size(root: RefCell<Rc<Directory>>) -> i32 {
+        let size_of_all_files: i32 = root.borrow().files.borrow().iter().map(|i| i.size).sum();
+        let mut size_of_all_directories: i32 = 0;
+        for child_dir in root.borrow().directories.borrow().iter() {
+            size_of_all_directories += Directory::calculate_total_size(child_dir.clone());
+        }
+        let total_size = size_of_all_files + size_of_all_directories;
+        root.borrow_mut().size.replace(total_size);
+        total_size
+    }
+}
 
 ///Prints spaces on the current line based on indent_level
 fn print_indent_level(indent_level: i32) {
@@ -256,24 +232,32 @@ fn print_indent_level(indent_level: i32) {
 }
 
 ///Prints out a file system (all Directories and Files) recursively, starting at the root Directory
-fn print_file_system(root: &Rc<Directory>, indent_level: i32) {
+fn print_file_system(root: &RefCell<Rc<Directory>>, indent_level: i32) {
     print_indent_level(indent_level);
-    let parent = match root.parent.borrow().upgrade() {
+    let parent = match root.borrow().parent.borrow().upgrade() {
         Some(dir) => dir.name.clone(),
         None => String::from("None"),
     };
-    println!("- {} (dir) (parent: {})", root.name, parent); //Print root directory
-    for i in 0..root.directories.borrow().len() {
+    println!(
+        "- {} (dir, size={}) (parent: {})",
+        root.borrow().name,
+        root.borrow().size.borrow(),
+        parent
+    ); //Print root directory
+    for i in 0..root.borrow().directories.borrow().len() {
         //Recursively print all directories of root
-        print_file_system(root.directories.borrow().get(i).unwrap(), indent_level + 1)
+        print_file_system(
+            root.borrow().directories.borrow().get(i).unwrap(),
+            indent_level + 1,
+        )
     }
-    for i in 0..root.files.borrow().len() {
+    for i in 0..root.borrow().files.borrow().len() {
         //Print all files of root
         print_indent_level(indent_level + 1);
         println!(
             "- {} (file, size={})",
-            root.files.borrow().get(i).unwrap().name,
-            root.files.borrow().get(i).unwrap().size
+            root.borrow().files.borrow().get(i).unwrap().name,
+            root.borrow().files.borrow().get(i).unwrap().size
         );
     }
 }
