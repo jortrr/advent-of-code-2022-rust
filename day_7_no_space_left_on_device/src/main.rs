@@ -137,6 +137,7 @@ fn main() {
                 if current_directory.borrow().has_file(&file_name) {
                     print!(", child ({}) is already known", &file_name);
                 } else {
+                    print!(", added new child ({})", &file_name);
                     //let mut reference = current_directory.borrow_mut();
                     //Directory::add_file(current_directory.clone(), &file_name, file_size);
                     current_directory
