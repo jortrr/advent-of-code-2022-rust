@@ -118,7 +118,7 @@ fn main() {
                 print!(", added new child ({})", child);
                 let child_dir = Rc::new(Directory::new(
                     &child,
-                    Rc::downgrade(&current_directory.borrow()),
+                    &Rc::downgrade(&current_directory.borrow()),
                 ));
                 *child_dir.parent.borrow_mut() = Rc::downgrade(&current_directory.borrow());
                 current_directory
@@ -159,14 +159,50 @@ struct Directory {
 }
 
 impl Directory {
-    fn new(name: &String, parent: Weak<Directory>) -> Directory {
+    ///Creates a new Directory with a weak reference (non-ownership) to a parent Directory
+    fn new(name: &String, parent: &Weak<Directory>) -> Directory {
         Directory {
             name: name.clone(),
             size: 0,
             directories: RefCell::new(Vec::new()),
             files: Vec::new(),
-            parent: RefCell::new(parent),
+            parent: RefCell::new(parent.clone()),
         }
+    }
+
+    ///Returns true if this Directory has a direct child File named file_name
+    fn has_file(&self, file_name: String) -> bool {
+        for file in &self.files {
+            if file.name == file_name {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    ///Returns true if this Directory has a direct child Directory named dir_name
+    fn has_directory(&self, dir_name: &String) -> bool {
+        for dir in self.directories.borrow().iter() {
+            if dir.name == *dir_name {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    ///Adds a File{name: file_name, size: file_size} to the files field of this Directory
+    fn add_file(&mut self, file_name: &String, file_size: i32) {
+        self.files.push(File {
+            name: file_name.clone(),
+            size: file_size,
+        });
+    }
+
+    ///Adds a Directory{name: dir_name, ..., parent: Rc::downgrade(parent)} to the directories field of this Directory
+    fn add_directory(&mut self, dir_name: &String, parent: &Rc<Directory>) {
+        self.directories
+            .borrow_mut()
+            .push(Rc::new(Directory::new(&dir_name, &Rc::downgrade(parent))));
     }
 }
 /*
@@ -193,15 +229,21 @@ impl Directory {
     }*/
 }*/
 
+///Prints spaces on the current line based on indent_level
 fn print_indent_level(indent_level: i32) {
     for _ in 0..indent_level {
         print!("  ");
     }
 }
 
+///Prints out a file system (all Directories and Files) recursively, starting at the root Directory
 fn print_file_system(root: &Rc<Directory>, indent_level: i32) {
     print_indent_level(indent_level);
-    println!("- {} (dir)", root.name);
+    let parent = match root.parent.borrow().upgrade() {
+        Some(dir) => dir.name.clone(),
+        None => String::from("None"),
+    };
+    println!("- {} (dir) (parent: {})", root.name, parent); //Print root directory
     for i in 0..root.directories.borrow().len() {
         //Recursively print all directories of root
         print_file_system(root.directories.borrow().get(i).unwrap(), indent_level + 1)
