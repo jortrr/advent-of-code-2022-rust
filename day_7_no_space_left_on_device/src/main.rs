@@ -165,7 +165,7 @@ fn main() {
         smallest_directory_size_greater_than_required_size =
             *smallest_size_dir.borrow().size.borrow();
         println!(
-            ", found smallest possible directory ({}, size={}) of atleast that size.",
+            ", the smallest possible directory atleast that size is ({}, size={}).",
             smallest_size_dir.borrow().name,
             smallest_directory_size_greater_than_required_size
         );

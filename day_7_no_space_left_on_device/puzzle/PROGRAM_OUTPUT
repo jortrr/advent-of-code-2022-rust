@@ -1501,4 +1501,4 @@ Found directory (pjqwq, size=56885) with size atmost 100000.
 The total disk space is 70000000.
 The used disk space is 44274331.
 The required unused disk space is 30000000.
-The disk space that needs to be freed is 4274331, found smallest possible directory (rlbhdgm, size=5025657) of atleast that size.
+The disk space that needs to be freed is 4274331, the smallest possible directory atleast that size is (rlbhdgm, size=5025657).
