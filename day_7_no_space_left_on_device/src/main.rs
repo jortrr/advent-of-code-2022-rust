@@ -141,7 +141,41 @@ fn main() {
         Directory::calculate_sum_of_directories_with_size_atmost_100000(root_directory.clone());
     writeln!(output_1_file, "{}", sum_of_directories_size_atmost_100000).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    let total_disk_space: i32 = 70000000;
+    let used_disk_space: i32 = *root_directory.borrow().size.borrow();
+    let required_unused_disk_space = 30000000;
+    let max_used_disk_space = total_disk_space - required_unused_disk_space;
+    let disk_space_that_needs_to_be_freed = used_disk_space - max_used_disk_space;
+    let mut smallest_directory_size_greater_than_required_size = 0;
+    if disk_space_that_needs_to_be_freed > 0 {
+        println!("The total disk space is {}.", total_disk_space);
+        println!("The used disk space is {}.", used_disk_space);
+        println!(
+            "The required unused disk space is {}.",
+            required_unused_disk_space
+        );
+        print!(
+            "The disk space that needs to be freed is {}",
+            disk_space_that_needs_to_be_freed,
+        );
+        let smallest_size_dir = Directory::find_smallest_directory_size_greater_than(
+            root_directory.clone(),
+            disk_space_that_needs_to_be_freed,
+        );
+        smallest_directory_size_greater_than_required_size =
+            *smallest_size_dir.borrow().size.borrow();
+        println!(
+            ", found smallest possible directory ({}, size={}) of atleast that size.",
+            smallest_size_dir.borrow().name,
+            smallest_directory_size_greater_than_required_size
+        );
+    }
+    writeln!(
+        output_2_file,
+        "{}",
+        smallest_directory_size_greater_than_required_size
+    )
+    .unwrap();
 }
 
 #[derive(Debug)]
@@ -270,6 +304,26 @@ impl Directory {
                 Directory::calculate_sum_of_directories_with_size_atmost_100000(child_dir.clone());
         }
         sum
+    }
+
+    fn find_smallest_directory_size_greater_than(
+        root: RefCell<Rc<Directory>>,
+        required_size: i32,
+    ) -> RefCell<Rc<Directory>> {
+        let mut smallest_size = *root.borrow().size.borrow();
+        let mut smallest_size_dir = root.clone();
+        for child_dir in root.borrow().directories.borrow().iter() {
+            let smallest_child_dir = Directory::find_smallest_directory_size_greater_than(
+                child_dir.clone(),
+                required_size,
+            );
+            let smallest_child_size = *smallest_child_dir.borrow().size.borrow();
+            if smallest_child_size < smallest_size && smallest_child_size >= required_size {
+                smallest_size = smallest_child_size;
+                smallest_size_dir = smallest_child_dir;
+            }
+        }
+        smallest_size_dir
     }
 }
 
