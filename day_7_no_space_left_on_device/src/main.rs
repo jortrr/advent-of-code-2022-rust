@@ -1,6 +1,7 @@
-use std::borrow::Borrow;
+use std::borrow::{Borrow, BorrowMut};
 use std::cell::RefCell;
 use std::io::{BufRead, Write};
+use std::ops::Index;
 use std::rc::{Rc, Weak};
 
 //Sources used: https://doc.rust-lang.org/book/ch15-06-reference-cycles.html
@@ -26,7 +27,7 @@ fn main() {
         name: String::from("/"),
         size: 0,
         directories: RefCell::new(Vec::new()),
-        files: Vec::new(),
+        files: RefCell::new(Vec::new()),
         parent: RefCell::new(Weak::new()),
     });
     let mut history_counter = 0;
@@ -128,7 +129,25 @@ fn main() {
                     .push(child_dir);
             } else {
                 //We've found a file
-                print!("Found a file in (current_directory)");
+                print!("Found a file in ({})", current_directory.borrow().name);
+                let white_space_index = line.find(" ").unwrap();
+                let (word_1, word_2) = line.split_at(white_space_index);
+                let file_size: i32 = word_1.parse().unwrap();
+                let file_name: String = word_2.to_string()[1..].to_string();
+                if current_directory.borrow().has_file(&file_name) {
+                    print!(", child ({}) is already known", &file_name);
+                } else {
+                    //let mut reference = current_directory.borrow_mut();
+                    //Directory::add_file(current_directory.clone(), &file_name, file_size);
+                    current_directory
+                        .borrow_mut()
+                        .files
+                        .borrow_mut()
+                        .push(File {
+                            name: file_name,
+                            size: file_size,
+                        });
+                }
             }
         }
         println!();
@@ -154,7 +173,7 @@ struct Directory {
     name: String,
     size: i32,
     directories: RefCell<Vec<Rc<Directory>>>,
-    files: Vec<File>,
+    files: RefCell<Vec<File>>,
     parent: RefCell<Weak<Directory>>,
 }
 
@@ -165,15 +184,15 @@ impl Directory {
             name: name.clone(),
             size: 0,
             directories: RefCell::new(Vec::new()),
-            files: Vec::new(),
+            files: RefCell::new(Vec::new()),
             parent: RefCell::new(parent.clone()),
         }
     }
 
     ///Returns true if this Directory has a direct child File named file_name
-    fn has_file(&self, file_name: String) -> bool {
-        for file in &self.files {
-            if file.name == file_name {
+    fn has_file(&self, file_name: &String) -> bool {
+        for file in self.files.borrow().iter() {
+            if file.name == *file_name {
                 return true;
             }
         }
@@ -191,8 +210,8 @@ impl Directory {
     }
 
     ///Adds a File{name: file_name, size: file_size} to the files field of this Directory
-    fn add_file(&mut self, file_name: &String, file_size: i32) {
-        self.files.push(File {
+    fn add_file(root: RefCell<Rc<Directory>>, file_name: &String, file_size: i32) {
+        root.borrow_mut().files.borrow_mut().push(File {
             name: file_name.clone(),
             size: file_size,
         });
@@ -248,10 +267,13 @@ fn print_file_system(root: &Rc<Directory>, indent_level: i32) {
         //Recursively print all directories of root
         print_file_system(root.directories.borrow().get(i).unwrap(), indent_level + 1)
     }
-    for i in 0..root.files.len() {
+    for i in 0..root.files.borrow().len() {
         //Print all files of root
         print_indent_level(indent_level + 1);
-        let file = root.files.get(i).unwrap();
-        println!("- {} (file, size={})", file.name, file.size);
+        println!(
+            "- {} (file, size={})",
+            root.files.borrow().get(i).unwrap().name,
+            root.files.borrow().get(i).unwrap().size
+        );
     }
 }
