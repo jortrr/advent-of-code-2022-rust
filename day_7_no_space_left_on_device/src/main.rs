@@ -1,7 +1,5 @@
-use std::borrow::{Borrow, BorrowMut};
 use std::cell::RefCell;
 use std::io::{BufRead, Write};
-use std::ops::Index;
 use std::rc::{Rc, Weak};
 
 //Sources used: https://doc.rust-lang.org/book/ch15-06-reference-cycles.html
@@ -23,8 +21,7 @@ fn main() {
     //---End---
 
     //We will be filling in the details of the root_directory as we process more input
-    let mut root_directory =
-        RefCell::new(Rc::new(Directory::new(&String::from("/"), &Weak::new())));
+    let root_directory = RefCell::new(Rc::new(Directory::new(&String::from("/"), &Weak::new())));
     let mut history_counter = 0;
     //Our current directory, changed by the "$ cd (dir)" command
     let mut current_directory = RefCell::new(Rc::clone(&root_directory.borrow()));
@@ -140,7 +137,9 @@ fn main() {
     Directory::calculate_total_size(root_directory.clone());
     Directory::print_file_system(&root_directory, 0);
     //Part 1
-    writeln!(output_1_file, "{}", "To do").unwrap();
+    let sum_of_directories_size_atmost_100000 =
+        Directory::calculate_sum_of_directories_with_size_atmost_100000(root_directory.clone());
+    writeln!(output_1_file, "{}", sum_of_directories_size_atmost_100000).unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
 }
@@ -252,6 +251,25 @@ impl Directory {
                 root.borrow().files.borrow().get(i).unwrap().size
             );
         }
+    }
+
+    ///Recursively look for directories in root with a size of atmost 100000, returns the sum of the sizes of those directories.
+    fn calculate_sum_of_directories_with_size_atmost_100000(root: RefCell<Rc<Directory>>) -> i32 {
+        let mut sum: i32 = 0;
+        let size = *root.borrow().size.borrow();
+        if size <= 100000 {
+            sum += size;
+            println!(
+                "Found directory ({}, size={}) with size atmost 100000.",
+                root.borrow().name,
+                root.borrow().size.borrow()
+            );
+        }
+        for child_dir in root.borrow().directories.borrow().iter() {
+            sum +=
+                Directory::calculate_sum_of_directories_with_size_atmost_100000(child_dir.clone());
+        }
+        sum
     }
 }
 
