@@ -138,7 +138,7 @@ fn main() {
         line.clear(); //Clear line string
     }
     Directory::calculate_total_size(root_directory.clone());
-    print_file_system(&root_directory, 0);
+    Directory::print_file_system(&root_directory, 0);
     //Part 1
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
@@ -222,42 +222,42 @@ impl Directory {
         root.borrow_mut().size.replace(total_size);
         total_size
     }
+
+    ///Prints out a file system (all Directories and Files) recursively, starting at the root Directory
+    fn print_file_system(root: &RefCell<Rc<Directory>>, indent_level: i32) {
+        print_indent_level(indent_level);
+        let parent = match root.borrow().parent.borrow().upgrade() {
+            Some(dir) => dir.name.clone(),
+            None => String::from("None"),
+        };
+        println!(
+            "- {} (dir, size={}) (parent: {})",
+            root.borrow().name,
+            root.borrow().size.borrow(),
+            parent
+        ); //Print root directory
+        for i in 0..root.borrow().directories.borrow().len() {
+            //Recursively print all directories of root
+            Directory::print_file_system(
+                root.borrow().directories.borrow().get(i).unwrap(),
+                indent_level + 1,
+            )
+        }
+        for i in 0..root.borrow().files.borrow().len() {
+            //Print all files of root
+            print_indent_level(indent_level + 1);
+            println!(
+                "- {} (file, size={})",
+                root.borrow().files.borrow().get(i).unwrap().name,
+                root.borrow().files.borrow().get(i).unwrap().size
+            );
+        }
+    }
 }
 
 ///Prints spaces on the current line based on indent_level
 fn print_indent_level(indent_level: i32) {
     for _ in 0..indent_level {
         print!("  ");
-    }
-}
-
-///Prints out a file system (all Directories and Files) recursively, starting at the root Directory
-fn print_file_system(root: &RefCell<Rc<Directory>>, indent_level: i32) {
-    print_indent_level(indent_level);
-    let parent = match root.borrow().parent.borrow().upgrade() {
-        Some(dir) => dir.name.clone(),
-        None => String::from("None"),
-    };
-    println!(
-        "- {} (dir, size={}) (parent: {})",
-        root.borrow().name,
-        root.borrow().size.borrow(),
-        parent
-    ); //Print root directory
-    for i in 0..root.borrow().directories.borrow().len() {
-        //Recursively print all directories of root
-        print_file_system(
-            root.borrow().directories.borrow().get(i).unwrap(),
-            indent_level + 1,
-        )
-    }
-    for i in 0..root.borrow().files.borrow().len() {
-        //Print all files of root
-        print_indent_level(indent_level + 1);
-        println!(
-            "- {} (file, size={})",
-            root.borrow().files.borrow().get(i).unwrap().name,
-            root.borrow().files.borrow().get(i).unwrap().size
-        );
     }
 }
