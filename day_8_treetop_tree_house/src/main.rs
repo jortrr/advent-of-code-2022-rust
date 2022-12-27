@@ -1,8 +1,5 @@
 use colored::Colorize;
-use std::{
-    io::{BufRead, Write},
-    num,
-};
+use std::io::{BufRead, Write};
 
 fn main() {
     //---Copy this to every puzzle program main---
@@ -41,7 +38,8 @@ fn main() {
     let amount_of_trees_visible = tree_grid.amount_of_trees_visible_outside_of_the_grid();
     writeln!(output_1_file, "{}", amount_of_trees_visible).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    let highest_scenic_score_for_a_tree = tree_grid.find_tree_with_highest_scenic_score();
+    writeln!(output_2_file, "{}", highest_scenic_score_for_a_tree).unwrap();
 }
 
 ///A structure representing a tree with a height in 0..10, and the directions from which the Tree is visible in
@@ -52,6 +50,11 @@ struct Tree {
     visible_from_bottom: bool,
     visible_from_left: bool,
     visible_from_right: bool,
+    viewing_distance_up: u32,
+    viewing_distance_down: u32,
+    viewing_distance_left: u32,
+    viewing_distance_right: u32,
+    scenic_score: u32,
 }
 
 impl Tree {
@@ -62,6 +65,11 @@ impl Tree {
             visible_from_bottom: false,
             visible_from_left: false,
             visible_from_right: false,
+            viewing_distance_up: 0,
+            viewing_distance_down: 0,
+            viewing_distance_left: 0,
+            viewing_distance_right: 0,
+            scenic_score: 0,
         }
     }
 
@@ -234,6 +242,85 @@ impl TreeGrid {
             }
         }
         amount_of_trees_visible
+    }
+
+    fn calculate_scenic_score_for_tree(&mut self, x: usize, y: usize) -> u32 {
+        let tree_height = self.get_tree(x, y).height;
+        //Look up
+        let mut viewing_distance_up: usize = 0;
+        while y as i32 - (viewing_distance_up + 1) as i32 >= 0 {
+            viewing_distance_up += 1;
+            let current_y = y - viewing_distance_up;
+            let tree_i_see = self.get_tree(x, current_y);
+            if tree_i_see.height >= tree_height {
+                //tree_i_see is blocking the view, now we know the viewing_distance
+                break;
+            }
+        }
+        //Look down
+        let mut viewing_distance_down: usize = 0;
+        let tree_grid_height = self.get_height();
+        while y + (viewing_distance_down + 1) < tree_grid_height {
+            viewing_distance_down += 1;
+            let current_y = y + viewing_distance_down;
+            let tree_i_see = self.get_tree(x, current_y);
+            if tree_i_see.height >= tree_height {
+                //tree_i_see is blocking the view, now we know the viewing_distance
+                break;
+            }
+        }
+        //Look left
+        let mut viewing_distance_left: usize = 0;
+        while x as i32 - (viewing_distance_left + 1) as i32 >= 0 {
+            viewing_distance_left += 1;
+            let current_x = x - viewing_distance_left;
+            let tree_i_see = self.get_tree(current_x, y);
+            if tree_i_see.height >= tree_height {
+                //tree_i_see is blocking the view, now we know the viewing_distance
+                break;
+            }
+        }
+        //Look right
+        let mut viewing_distance_right: usize = 0;
+        let width = self.get_width();
+        while x + (viewing_distance_right + 1) < width {
+            viewing_distance_right += 1;
+            let current_x = x + viewing_distance_right;
+            let tree_i_see = self.get_tree(current_x, y);
+
+            if tree_i_see.height >= tree_height {
+                //tree_i_see is blocking the view, now we know the viewing_distance
+                break;
+            }
+        }
+        //Update tree
+        let tree = self.get_mut_tree(x, y);
+        tree.viewing_distance_up = viewing_distance_up as u32;
+        tree.viewing_distance_down = viewing_distance_down as u32;
+        tree.viewing_distance_left = viewing_distance_left as u32;
+        tree.viewing_distance_right = viewing_distance_right as u32;
+        //Calculate the scenic score (mutiply all the viewing distances together)
+        tree.scenic_score = tree.viewing_distance_up
+            * tree.viewing_distance_down
+            * tree.viewing_distance_left
+            * tree.viewing_distance_right;
+
+        tree.scenic_score
+    }
+
+    fn find_tree_with_highest_scenic_score(&mut self) -> u32 {
+        let width = self.get_width();
+        let height = self.get_height();
+        let mut highest_scenic_score: u32 = 0;
+        for x in 0..width {
+            for y in 0..height {
+                let scenic_score = self.calculate_scenic_score_for_tree(x, y);
+                if scenic_score > highest_scenic_score {
+                    highest_scenic_score = scenic_score;
+                }
+            }
+        }
+        highest_scenic_score
     }
 
     ///Prints out the TreeGrid, also prints out the width, height and total numbers of Trees in the TreeGrid
