@@ -7,10 +7,10 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/day_1_calorie_counting/target/debug/day_1_calorie_counting",
+            "name": "Debug Day 8",
+            "program": "${workspaceFolder}/day_8_treetop_tree_house/target/debug/day_8_treetop_tree_house",
             "args": [],
-            "cwd": "${workspaceFolder}/day_1_calorie_counting"
+            "cwd": "${workspaceFolder}//day_8_treetop_tree_house"
         }
     ]
 }
