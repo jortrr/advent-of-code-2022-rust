@@ -35,14 +35,19 @@ fn main() {
             position_grid.tail.move_to(&position_grid.head);
             position_grid.update_grid_corners(&position_grid.head.position.clone());
             position_grid.update_grid_corners(&position_grid.tail.position.clone());
-            //position_grid.print_grid();
+            position_grid.print_grid();
         }
 
         line.clear(); //Clear line string
     }
     //Part 1
     position_grid.print_tail_positions();
-    writeln!(output_1_file, "{}", "To do").unwrap();
+    writeln!(
+        output_1_file,
+        "{}",
+        position_grid.tail.visited_positions.len()
+    )
+    .unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
 }
@@ -100,8 +105,8 @@ impl Knot {
             panic!("The distance between Head and Tail is greater than 2, this should never be the case.");
         }
         //We now know Tail needs to move to Head, the below code works for both diagonal and nondiagonal motions
-        self.position.x += (delta_x as f64 / 2.0).ceil() as i32;
-        self.position.y += (delta_y as f64 / 2.0).ceil() as i32;
+        self.position.x += round_up(delta_x as f64 / 2.0);
+        self.position.y += round_up(delta_y as f64 / 2.0);
         self.visited_positions.insert(self.position);
         return self.position;
     }
@@ -205,7 +210,7 @@ impl PositionGrid {
         );
     }
 
-    ///Find the extreme values of the visited_positions of the Head and Tail knot, so we can know the size of the grid we need to draw.
+    ///Find the extreme values of the visited_positions of the Head and Tail knot by supplying the current Position of these Knots, so we can know the size of the grid we need to draw.
     ///Updates grid_corner_bottom_right and grid_corner_top_left.
     fn update_grid_corners(&mut self, knot_position: &Position) {
         self.grid_corner_bottom_left.x = self.grid_corner_bottom_left.x.min(knot_position.x);
@@ -218,5 +223,16 @@ impl PositionGrid {
     fn print_header(header_text: &str) {
         println!("== {} ==", header_text);
         println!();
+    }
+}
+
+///Rounds up both positive and negative f64 values to an i32.
+/// -0.7 => -1
+/// 1.2 => 2
+fn round_up(value: f64) -> i32 {
+    if value < 0.0 {
+        value.floor() as i32
+    } else {
+        value.ceil() as i32
     }
 }
