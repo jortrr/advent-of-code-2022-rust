@@ -33,14 +33,14 @@ fn main() {
         for _ in 0..iterations {
             position_grid.head.go(&direction);
             position_grid.tail.move_to(&position_grid.head);
-            position_grid.update_grid_corners();
-            position_grid.print_grid();
+            position_grid.update_grid_corners(&position_grid.head.position.clone());
+            position_grid.update_grid_corners(&position_grid.tail.position.clone());
+            //position_grid.print_grid();
         }
 
         line.clear(); //Clear line string
     }
     //Part 1
-    position_grid.update_grid_corners();
     position_grid.print_tail_positions();
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
@@ -82,17 +82,18 @@ impl Knot {
         result
     }
 
-    ///Move this Tail knot to the Head knot, according to the movement described in the advent of code assignment
-    fn move_to(&mut self, head: &Knot) {
+    ///Move this Tail knot to the Head knot, according to the movement described in the advent of code assignment.
+    /// Returns the new Position of the Knot.
+    fn move_to(&mut self, head: &Knot) -> Position {
         let delta_x = head.position.x - self.position.x;
         let delta_y = head.position.y - self.position.y;
         if delta_x == 0 && delta_y == 0 {
             //Head and Tail overlap, Tail does not need to move
-            return;
+            return self.position;
         }
         if delta_x.abs() < 2 && delta_y.abs() < 2 {
             //Head and Tail are adjacent, Tail does not need to move
-            return;
+            return self.position;
         }
         if delta_x.abs() > 2 || delta_y.abs() > 2 {
             //The distance between Head and Tail should never be greater than 2, panic if it is
@@ -102,10 +103,12 @@ impl Knot {
         self.position.x += (delta_x as f64 / 2.0).ceil() as i32;
         self.position.y += (delta_y as f64 / 2.0).ceil() as i32;
         self.visited_positions.insert(self.position);
+        return self.position;
     }
 
-    ///Take 1 step in the given direction
-    fn go(&mut self, direction: &Direction) {
+    ///Take 1 step in the given direction.
+    /// Returns the new Position of the Knot.
+    fn go(&mut self, direction: &Direction) -> Position {
         match direction {
             Direction::Up => self.position.y += 1,
             Direction::Down => self.position.y -= 1,
@@ -113,6 +116,7 @@ impl Knot {
             Direction::Right => self.position.x += 1,
         }
         self.visited_positions.insert(self.position);
+        return self.position;
     }
 }
 
@@ -203,22 +207,11 @@ impl PositionGrid {
 
     ///Find the extreme values of the visited_positions of the Head and Tail knot, so we can know the size of the grid we need to draw.
     ///Updates grid_corner_bottom_right and grid_corner_top_left.
-    fn update_grid_corners(&mut self) {
-        let mut x_min = 0;
-        let mut x_max = 0;
-        let mut y_min = 0;
-        let mut y_max = 0;
-        let knots = [&self.head, &self.tail];
-        for knot in knots {
-            for position in knot.visited_positions.iter() {
-                x_min = x_min.min(position.x);
-                x_max = x_max.max(position.x);
-                y_min = y_min.min(position.y);
-                y_max = y_max.max(position.y);
-            }
-        }
-        self.grid_corner_bottom_left = Position { x: x_min, y: y_min };
-        self.grid_corner_top_right = Position { x: x_max, y: y_max };
+    fn update_grid_corners(&mut self, knot_position: &Position) {
+        self.grid_corner_bottom_left.x = self.grid_corner_bottom_left.x.min(knot_position.x);
+        self.grid_corner_bottom_left.y = self.grid_corner_bottom_left.y.min(knot_position.y);
+        self.grid_corner_top_right.x = self.grid_corner_top_right.x.max(knot_position.x);
+        self.grid_corner_top_right.y = self.grid_corner_top_right.y.max(knot_position.y);
     }
 
     ///Print a PositionGrid header to the terminal in the following format: '== {header_text} =='
