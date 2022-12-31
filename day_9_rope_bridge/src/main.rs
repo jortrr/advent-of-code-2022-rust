@@ -53,7 +53,7 @@ fn main() {
                         .clone(),
                 );
             }
-            position_grid.print_grid_ten_knots();
+            //position_grid.print_grid_ten_knots();
         }
 
         line.clear(); //Clear line string
