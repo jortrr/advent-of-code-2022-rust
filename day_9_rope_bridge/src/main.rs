@@ -26,10 +26,10 @@ fn main() {
         //Part 1
         PositionGrid::print_header(&line[..]);
         let direction = line.chars().nth(0).unwrap();
-        let iterations = line.chars().nth(2).unwrap();
-        //Convert the direction and iterations chars to the right types
+        let iterations = &line[2..];
+        //Convert the direction and iterations to the right types
         let direction: Direction = Direction::new(direction);
-        let iterations: u32 = iterations.to_digit(10).unwrap();
+        let iterations: u32 = iterations.parse().unwrap();
         for _ in 0..iterations {
             position_grid.head.go(&direction);
             position_grid.tail.move_to(&position_grid.head);
@@ -40,6 +40,8 @@ fn main() {
         line.clear(); //Clear line string
     }
     //Part 1
+    position_grid.update_grid_corners();
+    position_grid.print_tail_positions();
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
@@ -98,7 +100,7 @@ impl Knot {
         }
         //We now know Tail needs to move to Head, the below code works for both diagonal and nondiagonal motions
         self.position.x += (delta_x as f64 / 2.0).ceil() as i32;
-        self.position.x += (delta_x as f64 / 2.0).ceil() as i32;
+        self.position.y += (delta_y as f64 / 2.0).ceil() as i32;
         self.visited_positions.insert(self.position);
     }
 
@@ -161,6 +163,7 @@ impl PositionGrid {
                 }
                 print!("{}", position_symbol);
             }
+            //Print a message when H, T or s are covered by eachother on the corresponding line, else print a newline.
             if self.starting_position == self.tail.position && y == self.starting_position.y {
                 if self.head.position == self.tail.position {
                     println!("\t(H covers T, s)");
@@ -176,8 +179,26 @@ impl PositionGrid {
         println!();
     }
 
+    ///Prints the PositionGrid with a '#' symbol at every Position in tail.visited_positions. Prints a 's' at starting_position.
     fn print_tail_positions(&self) {
-        //TODO
+        println!("Positions the Tail visited:");
+        for y in (self.grid_corner_bottom_left.y..self.grid_corner_top_right.y + 1).rev() {
+            for x in self.grid_corner_bottom_left.x..self.grid_corner_top_right.x + 1 {
+                let grid_position = Position { x, y };
+                let mut position_symbol = ".";
+                if grid_position == self.starting_position {
+                    position_symbol = "s";
+                } else if self.tail.visited_positions.contains(&grid_position) {
+                    position_symbol = "#"
+                }
+                print!("{}", position_symbol);
+            }
+            println!();
+        }
+        println!(
+            "The Tail visited {} Positions.",
+            self.tail.visited_positions.len()
+        );
     }
 
     ///Find the extreme values of the visited_positions of the Head and Tail knot, so we can know the size of the grid we need to draw.
