@@ -16,81 +16,154 @@ fn main() {
     let mut line = String::new();
     //---End---
 
+    let mut cpu = CPU::new();
+    let interesting_cyles: [u32; 6] = [20, 60, 100, 140, 180, 220];
+    let mut interesting_signal_strength_sum = 0;
     while reader.read_line(&mut line).unwrap() > 0 {
         //Remove trailing new-line character
         line = line.trim().to_string();
         //Do stuff
+        //Part 1
+        println!("Instruction: {}", line);
+        let instruction = Instruction::new(&line);
+        cpu.schedule(instruction);
+        while cpu.process.as_ref().unwrap().state == ProcessState::Polling {
+            cpu.tick();
+            cpu.print_x_register();
+            if interesting_cyles.contains(&cpu.cycle) {
+                //Interesting cycle
+                let signal_strength = cpu.calculate_signal_strength();
+                interesting_signal_strength_sum += signal_strength;
+                print!("\t Signal strength: {}", signal_strength);
+            }
+            println!();
+        }
+        cpu.execute_process();
 
+        println!();
         line.clear(); //Clear line string
     }
     //Part 1
-    writeln!(output_1_file, "{}", "To do").unwrap();
+    println!(
+        "The sum of the interesting signal strengths is: {}",
+        interesting_signal_strength_sum
+    );
+    writeln!(output_1_file, "{}", interesting_signal_strength_sum).unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
 }
 
-///A CPU has a list of instructions it needs to execute
+///A CPU has a list of Processes that it needs poll and then execute
 struct CPU {
-    scheduled_instructions: Vec<Instruction>,
+    process: Option<Process>,
+    x: i32,     //The X register
+    cycle: u32, //The current cycle the CPU is on, starts at 0, gets incremented by tick()
 }
 
 impl CPU {
-    fn schedule(&mut self, instruction: &str) {
-        self.scheduled_instructions
-            .push(Instruction::new(instruction));
+    fn new() -> CPU {
+        CPU {
+            process: None,
+            x: 1,
+            cycle: 0,
+        }
     }
 
-    ///Removes done Instructions from scheduled_instructions
-    fn clean() {}
-}
+    fn schedule(&mut self, instruction: Instruction) {
+        self.process = Some(Process::new(instruction));
+    }
 
-#[derive(Clone)]
-enum InstructionType {
-    noop,
-    addx,
+    ///Polls every Process in processes, and runs them if appropriate. Increments cycle.
+    fn tick(&mut self) {
+        let process = &mut self.process.as_mut().unwrap();
+        if process.state == ProcessState::Polling {
+            process.poll();
+        }
+        self.cycle += 1;
+    }
+
+    fn print_x_register(&self) {
+        print!("[{}]\tX: {}", self.cycle, self.x);
+    }
+
+    fn calculate_signal_strength(&self) -> i32 {
+        self.cycle as i32 * self.x
+    }
+
+    ///Executes self.process if self.process.state == ProcessState::Ready, panics otherwise.
+    fn execute_process(&mut self) {
+        let process = &mut self.process.as_mut().unwrap();
+        if process.state == ProcessState::Ready {
+            //Executes the Instruction on the CPU
+            match process.instruction {
+                Instruction::Noop => (),
+                Instruction::Addx { v } => self.x += v,
+            }
+            process.state = ProcessState::Complete;
+        } else {
+            panic!("CPU.process.state ({:?}) should be equal to ProcessState::Ready, and it isn't, this should never happen.", process.state)
+        }
+    }
 }
 
 ///An Instruction can do something to a CPU
-#[derive(Clone)]
-struct Instruction {
-    instruction: InstructionType,
-    process: Process,
-    done: bool,
+enum Instruction {
+    Noop,            //No operation
+    Addx { v: i32 }, //Add v to the X register of the CPU
 }
 
 impl Instruction {
-    fn run(&mut self, cpu: &mut CPU) {
-        self.done = self.process.poll();
-        if self.done {
-            match self.instruction {
-                InstructionType::noop => (), //TODO
-                InstructionType::addx => (), //TODO
-            }
-        }
-    }
-
     fn new(instruction: &str) -> Instruction {
-        //TODO
+        let first_word = &instruction[0..4];
+        match first_word {
+            "noop" => Instruction::Noop,
+            "addx" => {
+                let second_word = &instruction[5..];
+                let v: i32 = second_word.to_string().parse().unwrap();
+                Instruction::Addx { v }
+            }
+            _ => panic!("The given first word ({}) is not a valid Instruction, a valid Instruction is 'noop' or 'addx'.",first_word),
+        }
     }
 }
 
-#[derive(Clone)]
+#[derive(PartialEq, Debug)]
+enum ProcessState {
+    Polling,
+    Ready,
+    Complete,
+}
+
 struct Process {
+    instruction: Instruction,
     cycles: u32,
+    state: ProcessState,
 }
 
 impl Process {
-    fn new(cycles: u32) -> Process {
-        Process { cycles }
+    fn new(instruction: Instruction) -> Process {
+        let mut cycles = 1; //For Noop instruction
+        match instruction {
+            Instruction::Addx { v: _ } => cycles = 2,
+            _ => (), //Do nothing otherwise
+        }
+        Process {
+            instruction,
+            cycles,
+            state: ProcessState::Polling,
+        }
     }
 
     ///Polls the process, decrementing the cycles field by one unless cycles is equal to 0. Will return true if cycles
-    ///equals 0, meaning the process is completed, and false otherwise.
-    fn poll(&mut self) -> bool {
-        if self.cycles == 0 {
-            return true;
+    ///equals 0, meaning the process is completed, and false otherwise. Sets complete field to true if complete.
+    fn poll(&mut self) {
+        if self.state == ProcessState::Polling {
+            if self.cycles > 0 {
+                self.cycles -= 1;
+            }
+            if self.cycles == 0 {
+                self.state = ProcessState::Ready;
+            }
         }
-        self.cycles -= 1;
-        false
     }
 }
