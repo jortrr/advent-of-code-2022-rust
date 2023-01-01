@@ -517,6 +517,7 @@ Instruction: noop
 [240]	X: 37
 
 The sum of the interesting signal strengths is: 12840
+CRT screen (40x60 Pixels):
 ####.#..#...##.####.###....##.####.####.
 ...#.#.#.....#.#....#..#....#.#.......#.
 ..#..##......#.###..###.....#.###....#..

@@ -215,6 +215,7 @@ impl CRT {
     }
 
     fn draw_image(&self) {
+        println!("CRT screen (40x60 Pixels):");
         for y in 0..self.grid.len() {
             for x in 0..self.grid[0].len() {
                 match self.grid[y][x] {
