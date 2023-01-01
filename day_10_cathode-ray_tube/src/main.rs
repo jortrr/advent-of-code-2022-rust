@@ -1,4 +1,7 @@
-use std::io::{BufRead, Write};
+use std::{
+    hint::spin_loop,
+    io::{BufRead, Write},
+};
 
 fn main() {
     //---Copy this to every puzzle program main---
@@ -17,6 +20,7 @@ fn main() {
     //---End---
 
     let mut cpu = CPU::new();
+    let mut crt = CRT::new();
     let interesting_cyles: [u32; 6] = [20, 60, 100, 140, 180, 220];
     let mut interesting_signal_strength_sum = 0;
     while reader.read_line(&mut line).unwrap() > 0 {
@@ -36,6 +40,8 @@ fn main() {
                 interesting_signal_strength_sum += signal_strength;
                 print!("\t Signal strength: {}", signal_strength);
             }
+            //Part 2
+            crt.draw_pixel(cpu.x);
             println!();
         }
         cpu.execute_process();
@@ -50,6 +56,7 @@ fn main() {
     );
     writeln!(output_1_file, "{}", interesting_signal_strength_sum).unwrap();
     //Part 2
+    crt.draw_image();
     writeln!(output_2_file, "{}", "To do").unwrap();
 }
 
@@ -164,6 +171,62 @@ impl Process {
             if self.cycles == 0 {
                 self.state = ProcessState::Ready;
             }
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+enum Pixel {
+    Lit,
+    Dark,
+    Unintialized,
+}
+
+//A cathode-ray tube screen of 40x6 pixels. A pixel can be lit '#' (true) or dark '.' (false).
+struct CRT {
+    grid: [[Pixel; 40]; 6],
+    x: usize,
+    y: usize,
+}
+
+impl CRT {
+    fn new() -> CRT {
+        CRT {
+            grid: [[Pixel::Unintialized; 40]; 6],
+            x: 0, //The current x coordinate of the laser beam
+            y: 0, //The current y coordinate of the laser beam
+        }
+    }
+    fn draw_pixel(&mut self, sprite_horizontal_position: i32) {
+        if (sprite_horizontal_position - self.x as i32).abs() < 2 {
+            //Lit
+            self.grid[self.y][self.x] = Pixel::Lit;
+        } else {
+            //Dark
+            self.grid[self.y][self.x] = Pixel::Dark;
+        }
+        //Go to the next pixel coordinate
+        if self.x < 39 {
+            self.x += 1;
+        } else {
+            self.x = 0;
+            self.y += 1;
+        }
+    }
+
+    fn draw_image(&self) {
+        for y in 0..self.grid.len() {
+            for x in 0..self.grid[0].len() {
+                match self.grid[y][x] {
+                    Pixel::Lit => print!("#"),
+                    Pixel::Dark => print!("."),
+                    Pixel::Unintialized => panic!(
+                        "The CRT Pixel at grid[{}][{}] was Unintialized, this should never happen.",
+                        x, y
+                    ),
+                }
+            }
+            println!();
         }
     }
 }
