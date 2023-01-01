@@ -20,7 +20,8 @@ fn main() {
     // Create a regex to match the pattern "number-number,number-number"
     let regex = Regex::new(r"(\d+)-(\d+),(\d+)-(\d+)").unwrap();
     while reader.read_line(&mut line).unwrap() > 0 {
-        line = line.trim().to_string(); //Remove trailing new-line character
+        //Remove trailing new-line character
+        line = line.trim().to_string();
         let numbers: Vec<i32> = regex
             .captures(&line)
             .unwrap()
