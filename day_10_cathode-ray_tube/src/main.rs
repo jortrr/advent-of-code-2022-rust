@@ -57,7 +57,7 @@ fn main() {
     writeln!(output_1_file, "{}", interesting_signal_strength_sum).unwrap();
     //Part 2
     crt.draw_image();
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    writeln!(output_2_file, "{}", "See PROGRAM_OUTPUT (its ZKJFBJFZ)").unwrap();
 }
 
 ///A CPU has a list of Processes that it needs poll and then execute
