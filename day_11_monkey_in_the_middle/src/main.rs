@@ -22,45 +22,68 @@ fn main() {
     let mut monkey_in_construction = Monkey::new();
     while reader.read_line(&mut line).unwrap() > 0 {
         //Remove trailing new-line character
+        print!("line:\t{}", line);
         line = line.trim().to_string();
         //Do stuff
         //Part 1
-        if line.is_empty() { //Monkey found, add Monkey to MonkeyInTheMiddle
-        }
-        let mut words = line.split_ascii_whitespace();
-        let first_word = words.nth(0).unwrap();
-        if first_word == "Monkey" {
-            //Skip Monkey line
+        if line.is_empty() {
+            //Monkey found, add Monkey to MonkeyInTheMiddle
+            monkey_in_the_middle.monkeys.push(monkey_in_construction);
+            monkey_in_construction = Monkey::new();
             continue;
         }
+        let mut words = line.split_whitespace();
+        let first_word = words.nth(0).unwrap();
+        let last_word = words.nth_back(0).unwrap();
+        if first_word == "Monkey" {
+            //Skip Monkey line
+            line.clear();
+            continue;
+        }
+        let second_to_last_word = words.nth_back(0).unwrap();
         if first_word == "Starting" {
             //Starting items line
-        } else if first_word == "Operation" {
+            //TODO
+        } else if first_word == "Operation:" {
             //Operation line
-        } else if first_word == "Test" {
+            monkey_in_construction.operation = Operation::new(second_to_last_word, last_word);
+        } else if first_word == "Test:" {
             //Test line
+            monkey_in_construction.test_divisor = last_word.to_string().parse().unwrap();
         } else if first_word == "If" {
-            let second_word = words.nth(1).unwrap();
-            if second_word == "true" {
+            let second_word = words.nth(0).unwrap();
+            if second_word == "true:" {
                 //Throw to monkey if test is true
-            } else if second_word == "false" {
+                monkey_in_construction.monkey_if_test_is_true =
+                    last_word.to_string().parse().unwrap();
+            } else if second_word == "false:" {
                 //Throw to monkey if test is false
+                monkey_in_construction.monkey_if_test_is_false =
+                    last_word.to_string().parse().unwrap();
             } else {
                 panic!(
-                    "Invalid input on line: {}; expected second word to be 'true' or 'false'.",
-                    line
+                    "Invalid input on line: {}; expected second word ({}) to be 'true:' or 'false:'.",
+                    line,
+                    second_word
                 );
             }
         } else {
             panic!(
-                "Invalid input on line: {}; first word is not in {{'Monkey', 'Starting', 'Operation', 'Test', 'If'}}.",
-                line
+                "Invalid input on line: {}; first word ({}) is not in {{'Monkey', 'Starting', 'Operation', 'Test', 'If'}}.",
+                line,
+                first_word
             );
         }
 
         line.clear(); //Clear line string
     }
+    //Monkey found, add Monkey to MonkeyInTheMiddle
+    monkey_in_the_middle.monkeys.push(monkey_in_construction);
+    monkey_in_construction = Monkey::new();
+    println!();
     //Part 1
+    monkey_in_the_middle.print_monkeys();
+    //TODO: Play the game
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
@@ -118,12 +141,16 @@ impl MonkeyInTheMiddle {
     }
 
     fn print_monkeys(&self) {
+        println!(
+            "The Monkeys playing Monkey in the Middle at round {}:",
+            self.round
+        );
         for (i, monkey) in self.monkeys.iter().enumerate() {
             println!("Monkey {}:", i);
             print!("\tItems: ");
             monkey.print_items();
             println!();
-            print!("\tOperation: new = old ");
+            print!("\tOperation: new = old -> ");
             println!("{:?}", monkey.operation);
             println!("\tTest: divisible by {}", monkey.test_divisor);
             println!(
