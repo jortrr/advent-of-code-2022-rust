@@ -19,9 +19,11 @@ fn main() {
 
     //Temporary variables to construct a Monkey
     let mut monkey_in_the_middle = MonkeyInTheMiddle::new();
+    let mut monkey_in_the_middle_part_2 = MonkeyInTheMiddle::new();
     let mut monkey_in_construction = Monkey::new();
     let mut monkey_counter = 0;
     let amount_of_rounds = 20;
+    let amount_of_rounds_part_2 = 10000;
     while reader.read_line(&mut line).unwrap() > 0 {
         //Remove trailing new-line character
         print!("line:\t{}", line);
@@ -92,11 +94,13 @@ fn main() {
     }
     //Monkey found, add Monkey to MonkeyInTheMiddle
     monkey_in_the_middle.monkeys.push(monkey_in_construction);
+    monkey_in_the_middle_part_2 = monkey_in_the_middle.clone();
     println!();
     //Part 1
+    println!("Part 1:");
     monkey_in_the_middle.print_monkeys();
     for _ in 0..amount_of_rounds {
-        monkey_in_the_middle.play_round();
+        monkey_in_the_middle.play_round_part_1();
         monkey_in_the_middle.print_round_result();
         println!();
     }
@@ -106,12 +110,36 @@ fn main() {
         "The level of monkey business in this situation is: {}",
         monkey_business
     );
+    println!();
     //TODO: Play the game
     writeln!(output_1_file, "{}", monkey_business).unwrap();
     //Part 2
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    println!("Part 2:");
+    //We need to find a common divisor for all of the test_divisor values, we can attain this value by
+    //multiplying all of the test divisors together. https://sites.millersville.edu/bikenaga/number-theory/divisibility/divisibility.pdf
+    //If i understand it correctly, we can use the least common multiple to divide the balooning worry levels: https://en.wikipedia.org/wiki/Least_common_multiple
+    let mut least_common_multiple = 1;
+    for monkey in &monkey_in_the_middle_part_2.monkeys {
+        least_common_multiple *= monkey.test_divisor;
+    }
+    println!("Least common multiple: {}", least_common_multiple);
+    monkey_in_the_middle_part_2.print_monkeys();
+    for _ in 0..amount_of_rounds_part_2 {
+        monkey_in_the_middle_part_2.play_round_part_2(least_common_multiple as u64);
+        monkey_in_the_middle_part_2.print_round_result();
+        println!();
+    }
+    monkey_in_the_middle_part_2.print_amount_of_items_inspected_per_monkey();
+    let monkey_business = monkey_in_the_middle_part_2.calculate_monkey_business();
+    println!(
+        "The level of monkey business in this situation is: {}",
+        monkey_business
+    );
+
+    writeln!(output_2_file, "{}", monkey_business).unwrap();
 }
 
+#[derive(Clone)]
 struct MonkeyInTheMiddle {
     monkeys: Vec<Monkey>,
     round: u32,
@@ -125,8 +153,22 @@ impl MonkeyInTheMiddle {
         }
     }
 
+    fn play_round_part_1(&mut self) {
+        self.play_round(3.0);
+    }
+
+    fn play_round_part_2(&mut self, least_common_multiple: u64) {
+        self.play_round(1.0);
+        //Prevent the worry_levels from ballooning by moduloing them by the least common multiple
+        for i in 0..self.monkeys.len() {
+            for j in 0..self.monkeys[i].items.len() {
+                self.monkeys[i].items[j].worry_level %= least_common_multiple;
+            }
+        }
+    }
+
     ///Play a round of Monkey in the Middle
-    fn play_round(&mut self) {
+    fn play_round(&mut self, worry_level_divisor: f64) {
         for i in 0..self.monkeys.len() {
             //Inspect and test each item
             {
@@ -135,7 +177,7 @@ impl MonkeyInTheMiddle {
                     let item = &mut monkey.items[j];
                     item.inspect(&monkey.operation);
                     monkey.amount_of_items_inspected += 1;
-                    item.get_bored_with_item();
+                    item.get_bored_with_item(worry_level_divisor);
                     let item = &monkey.items[j];
                     let recipient_monkey_index = monkey.test(item) as usize;
                     let item = &mut monkey.items[j];
@@ -201,25 +243,26 @@ impl MonkeyInTheMiddle {
         }
     }
 
-    fn calculate_monkey_business(&self) -> u32 {
+    fn calculate_monkey_business(&self) -> u64 {
         let mut monkey_activities: Vec<u32> = Vec::new();
         for monkey in &self.monkeys {
             monkey_activities.push(monkey.amount_of_items_inspected);
         }
         monkey_activities.sort();
         monkey_activities.reverse();
-        let monkey_business = monkey_activities.get(0).unwrap() * monkey_activities.get(1).unwrap();
+        let monkey_business =
+            *monkey_activities.get(0).unwrap() as u64 * *monkey_activities.get(1).unwrap() as u64;
         monkey_business
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Factor {
     Old,
     Number(u32),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Operation {
     Add(u32),
     Multiply(Factor),
@@ -241,6 +284,7 @@ impl Operation {
     }
 }
 
+#[derive(Clone)]
 struct Monkey {
     items: Vec<Item>,
     operation: Operation,
@@ -283,6 +327,7 @@ impl Monkey {
     }
 }
 
+#[derive(Clone)]
 struct Item {
     worry_level: u64,
     monkey_index: usize,
@@ -302,8 +347,8 @@ impl Item {
 
     ///The Monkey gets bored with the Item after inspecting it. worry_level is divided by 3 because the Item
     /// wasn't damaged.
-    fn get_bored_with_item(&mut self) {
-        self.worry_level = (self.worry_level as f64 / 3.0).floor() as u64;
+    fn get_bored_with_item(&mut self, worry_level_divisor: f64) {
+        self.worry_level = (self.worry_level as f64 / worry_level_divisor).floor() as u64;
     }
 
     fn new(worry_level: u64, monkey_index: usize) -> Item {
