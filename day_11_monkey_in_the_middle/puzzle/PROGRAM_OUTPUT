@@ -1,0 +1,315 @@
+line:	Monkey 0:
+line:	  Starting items: 92, 73, 86, 83, 65, 51, 55, 93
+line:	  Operation: new = old * 5
+line:	  Test: divisible by 11
+line:	    If true: throw to monkey 3
+line:	    If false: throw to monkey 4
+line:	
+line:	Monkey 1:
+line:	  Starting items: 99, 67, 62, 61, 59, 98
+line:	  Operation: new = old * old
+line:	  Test: divisible by 2
+line:	    If true: throw to monkey 6
+line:	    If false: throw to monkey 7
+line:	
+line:	Monkey 2:
+line:	  Starting items: 81, 89, 56, 61, 99
+line:	  Operation: new = old * 7
+line:	  Test: divisible by 5
+line:	    If true: throw to monkey 1
+line:	    If false: throw to monkey 5
+line:	
+line:	Monkey 3:
+line:	  Starting items: 97, 74, 68
+line:	  Operation: new = old + 1
+line:	  Test: divisible by 17
+line:	    If true: throw to monkey 2
+line:	    If false: throw to monkey 5
+line:	
+line:	Monkey 4:
+line:	  Starting items: 78, 73
+line:	  Operation: new = old + 3
+line:	  Test: divisible by 19
+line:	    If true: throw to monkey 2
+line:	    If false: throw to monkey 3
+line:	
+line:	Monkey 5:
+line:	  Starting items: 50
+line:	  Operation: new = old + 5
+line:	  Test: divisible by 7
+line:	    If true: throw to monkey 1
+line:	    If false: throw to monkey 6
+line:	
+line:	Monkey 6:
+line:	  Starting items: 95, 88, 53, 75
+line:	  Operation: new = old + 8
+line:	  Test: divisible by 3
+line:	    If true: throw to monkey 0
+line:	    If false: throw to monkey 7
+line:	
+line:	Monkey 7:
+line:	  Starting items: 50, 77, 98, 85, 94, 56, 89
+line:	  Operation: new = old + 2
+line:	  Test: divisible by 13
+line:	    If true: throw to monkey 4
+line:	    If false: throw to monkey 0
+The Monkeys playing Monkey in the Middle at round 0:
+Monkey 0:
+	Items: 92, 73, 86, 83, 65, 51, 55, 93
+	Operation: new = old -> Multiply(Number(5))
+	Test: divisible by 11
+		If true: throw to monkey 3
+		If false: throw to monkey 4
+Monkey 1:
+	Items: 99, 67, 62, 61, 59, 98
+	Operation: new = old -> Multiply(Old)
+	Test: divisible by 2
+		If true: throw to monkey 6
+		If false: throw to monkey 7
+Monkey 2:
+	Items: 81, 89, 56, 61, 99
+	Operation: new = old -> Multiply(Number(7))
+	Test: divisible by 5
+		If true: throw to monkey 1
+		If false: throw to monkey 5
+Monkey 3:
+	Items: 97, 74, 68
+	Operation: new = old -> Add(1)
+	Test: divisible by 17
+		If true: throw to monkey 2
+		If false: throw to monkey 5
+Monkey 4:
+	Items: 78, 73
+	Operation: new = old -> Add(3)
+	Test: divisible by 19
+		If true: throw to monkey 2
+		If false: throw to monkey 3
+Monkey 5:
+	Items: 50
+	Operation: new = old -> Add(5)
+	Test: divisible by 7
+		If true: throw to monkey 1
+		If false: throw to monkey 6
+Monkey 6:
+	Items: 95, 88, 53, 75
+	Operation: new = old -> Add(8)
+	Test: divisible by 3
+		If true: throw to monkey 0
+		If false: throw to monkey 7
+Monkey 7:
+	Items: 50, 77, 98, 85, 94, 56, 89
+	Operation: new = old -> Add(2)
+	Test: divisible by 13
+		If true: throw to monkey 4
+		If false: throw to monkey 0
+
+After round 1, the monkeys are holding items with these worry levels:
+Monkey 0: 24, 6, 6, 501, 27, 12, 11, 7, 139, 2, 3, 3, 10, 3, 1089, 427, 1067, 30, 19, 32, 29, 33, 17
+Monkey 1: 130, 70, 49
+Monkey 2: 
+Monkey 3: 52, 47, 37, 29, 31, 52, 25, 27
+Monkey 4: 130, 26
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 2, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 90, 2, 2, 2, 2, 2, 4, 1878, 545
+Monkey 1: 7, 7, 203
+Monkey 2: 17, 17
+Monkey 3: 14, 4, 4, 279, 16, 7, 7, 2, 2, 2, 6, 2, 238, 593, 17, 11, 18, 17, 10, 9, 44
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 3, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4581, 3, 3, 5, 9, 2
+Monkey 1: 28, 14, 14
+Monkey 2: 
+Monkey 3: 2, 51, 2, 2, 2, 2, 2, 3, 1044, 303
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 4, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 14, 87, 22, 22
+Monkey 1: 35
+Monkey 2: 17, 2546
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 6, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 5, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 138
+Monkey 1: 5940, 14
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 8, 49, 13, 13
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 6, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1306801, 22
+Monkey 1: 7
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 77
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 7, the monkeys are holding items with these worry levels:
+Monkey 0: 6, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 726001, 13
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 8, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 80668
+Monkey 2: 
+Monkey 3: 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 9, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 723036247
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 10, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 401686804
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 11, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4959098
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 12, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2755055
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 13, the monkeys are holding items with these worry levels:
+Monkey 0: 102042, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 14, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 56691, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 15, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 6300
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 16, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 1470001
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 17, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 490001
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 18, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 54446
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 19, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 329374102
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+After round 20, the monkeys are holding items with these worry levels:
+Monkey 0: 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+Monkey 1: 
+Monkey 2: 
+Monkey 3: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 182985613
+Monkey 4: 
+Monkey 5: 
+Monkey 6: 
+Monkey 7: 
+
+The total number of times each Monkey inspected items at round 20:
+Monkey 0 inspected items 348 times.
+Monkey 1 inspected items 22 times.
+Monkey 2 inspected items 9 times.
+Monkey 3 inspected items 330 times.
+Monkey 4 inspected items 347 times.
+Monkey 5 inspected items 335 times.
+Monkey 6 inspected items 336 times.
+Monkey 7 inspected items 45 times.
+The level of monkey business in this situation is: 120756

@@ -5,7 +5,7 @@ fn main() {
     //---Copy this to every puzzle program main---
     // File paths
     let relative_puzzle_path = "puzzle/";
-    let input_file_path = format!("{}{}", relative_puzzle_path, "EXAMPLE_INPUT");
+    let input_file_path = format!("{}{}", relative_puzzle_path, "INPUT");
     let output_1_path = format!("{}{}", relative_puzzle_path, "OUTPUT_PART_ONE");
     let output_2_path = format!("{}{}", relative_puzzle_path, "OUTPUT_PART_TWO");
 
@@ -52,7 +52,7 @@ fn main() {
                 if word.chars().last().unwrap() == ',' {
                     word.pop();
                 }
-                let worry_level: u32 = word.parse().unwrap();
+                let worry_level: u64 = word.parse().unwrap();
                 monkey_in_construction
                     .items
                     .push(Item::new(worry_level, monkey_counter))
@@ -254,7 +254,7 @@ impl Monkey {
     ///Tests whether an Item is divisible by the Monkeys test_divisor, returns the index of the Monkey the item needs
     ///to be thrown to.
     fn test(&self, item: &Item) -> u32 {
-        let test_holds: bool = item.worry_level % self.test_divisor == 0;
+        let test_holds: bool = item.worry_level % self.test_divisor as u64 == 0;
         match test_holds {
             true => self.monkey_if_test_is_true,
             false => self.monkey_if_test_is_false,
@@ -284,7 +284,7 @@ impl Monkey {
 }
 
 struct Item {
-    worry_level: u32,
+    worry_level: u64,
     monkey_index: usize,
 }
 
@@ -292,10 +292,10 @@ impl Item {
     ///Inspect the Item, applies a Monkeys Operation to the Item
     fn inspect(&mut self, operation: &Operation) {
         match operation {
-            Operation::Add(x) => self.worry_level += x,
+            Operation::Add(x) => self.worry_level += *x as u64,
             Operation::Multiply(factor) => match factor {
                 Factor::Old => self.worry_level *= self.worry_level,
-                Factor::Number(x) => self.worry_level *= x,
+                Factor::Number(x) => self.worry_level *= *x as u64,
             },
         }
     }
@@ -303,10 +303,10 @@ impl Item {
     ///The Monkey gets bored with the Item after inspecting it. worry_level is divided by 3 because the Item
     /// wasn't damaged.
     fn get_bored_with_item(&mut self) {
-        self.worry_level = (self.worry_level as f64 / 3.0).floor() as u32;
+        self.worry_level = (self.worry_level as f64 / 3.0).floor() as u64;
     }
 
-    fn new(worry_level: u32, monkey_index: usize) -> Item {
+    fn new(worry_level: u64, monkey_index: usize) -> Item {
         Item {
             worry_level,
             monkey_index,
