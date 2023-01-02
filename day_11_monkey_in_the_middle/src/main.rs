@@ -112,23 +112,40 @@ impl MonkeyInTheMiddle {
         );
         for i in 0..self.monkeys.len() {
             print!("Monkey {}: ", i);
-            let amount_of_items = self.monkeys[i].items.len();
-            for j in 0..amount_of_items {
-                print!("{}", self.monkeys[i].items[j].worry_level);
-                if j < amount_of_items - 1 {
-                    print!(", ");
-                }
-            }
+            self.monkeys[i].print_items();
             println!();
         }
     }
+
+    fn print_monkeys(&self) {
+        for (i, monkey) in self.monkeys.iter().enumerate() {
+            println!("Monkey {}:", i);
+            print!("\tItems: ");
+            monkey.print_items();
+            println!();
+            print!("\tOperation: new = old ");
+            println!("{:?}", monkey.operation);
+            println!("\tTest: divisible by {}", monkey.test_divisor);
+            println!(
+                "\t\tIf true: throw to monkey {}",
+                monkey.monkey_if_test_is_true
+            );
+            println!(
+                "\t\tIf false: throw to monkey {}",
+                monkey.monkey_if_test_is_false
+            );
+        }
+        println!();
+    }
 }
 
+#[derive(Debug)]
 enum Factor {
     Old,
     Number(u32),
 }
 
+#[derive(Debug)]
 enum Operation {
     Add(u32),
     Multiply(Factor),
@@ -178,6 +195,16 @@ impl Monkey {
             monkey_if_test_is_true: 0,
             monkey_if_test_is_false: 0,
             amount_of_items_inspected: 0,
+        }
+    }
+
+    fn print_items(&self) {
+        let amount_of_items = self.items.len();
+        for j in 0..amount_of_items {
+            print!("{}", self.items[j].worry_level);
+            if j < amount_of_items - 1 {
+                print!(", ");
+            }
         }
     }
 }
