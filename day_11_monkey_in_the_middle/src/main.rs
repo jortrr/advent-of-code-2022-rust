@@ -159,7 +159,10 @@ impl MonkeyInTheMiddle {
 
     fn play_round_part_2(&mut self, least_common_multiple: u64) {
         self.play_round(1.0);
-        //Prevent the worry_levels from ballooning by moduloing them by the least common multiple
+        //Prevent the worry_levels from ballooning by moduloing them by the least common multiple of all the test_divisors
+        //The lcm contains every test_divisor. Removing the part of an int that was cleanly divisible by a multiple of a divisor
+        //has no influence on the rest, because the entire number needs to be divisible by the test_divisor, the rest and what got removed. Therefore
+        //the least common multiple can be safely modulod away, to keep the numbers from ballooning, it seems.
         for i in 0..self.monkeys.len() {
             for j in 0..self.monkeys[i].items.len() {
                 self.monkeys[i].items[j].worry_level %= least_common_multiple;
