@@ -1,0 +1,7 @@
+# Sources
+
+We will use the breadth-first search algorithm to find the shortest path from S (elevation a) to E (elevation z).
+
+Sources used:
+
+- <https://cp-algorithms.com/graph/breadth-first-search.html>
