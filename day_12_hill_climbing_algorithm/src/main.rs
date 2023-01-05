@@ -1,7 +1,9 @@
 use std::collections::VecDeque;
+use std::env;
 use std::io::{BufRead, Write};
 
 fn main() {
+    env::set_var("RUST_BACKTRACE", "1");
     //---Copy this to every puzzle program main---
     // File paths
     let relative_puzzle_path = "puzzle/";
@@ -38,6 +40,15 @@ fn main() {
     }
     height_map.print_height_map();
     //Part 1
+    height_map.run_breadth_first_search_algorithm();
+    height_map.print_distance_map();
+    println!(
+        "The shortest distance from 'S' to 'E' is {}.",
+        height_map
+            .get_node_from_point(&height_map.find_goal_node().unwrap())
+            .shortest_path_length
+            .unwrap()
+    );
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
@@ -68,7 +79,9 @@ impl HeightMap {
         while !self.queue.is_empty() {
             //Run the BFS algorithm
             let current_node: Point = self.queue.pop_front().unwrap();
+            println!("Running the BFS algorithm on Node {:?}", current_node);
             self.process_node(&current_node);
+            println!();
         }
     }
 
@@ -92,9 +105,6 @@ impl HeightMap {
         if identifier.x < width - 1 {
             self.process_neighbour_node(identifier, 1, 0);
         }
-        //Set node.used to true
-        let node = self.get_node_from_point(identifier);
-        node.used = true;
     }
 
     ///Add the neigbours to queue and set neighbour.shortest_path_length = node.shortest_path_length+1 if there is an edge between the neighbouring nodes and neighbour.used==false.
@@ -108,14 +118,19 @@ impl HeightMap {
             x: (identifier.x as i32 + x_translation) as u16,
             y: (identifier.y as i32 + y_translation) as u16,
         };
+        print!("Processing neighbour Node {:?}", other);
         let node = self.get_node_immut(identifier.x, identifier.y);
         let shortest_path_length = node.shortest_path_length.unwrap() + 1;
         let other_node = self.get_node_immut(other.x, other.y);
         if self.have_an_edge(&node, &other_node) && !other_node.used {
             self.queue.push_back(other.clone());
+            println!(", added Node to self.queue.");
+            let other_node = self.get_node(other.x, other.y);
+            other_node.shortest_path_length = Some(shortest_path_length);
+            other_node.used = true;
+        } else {
+            println!();
         }
-        let other_node = self.get_node(other.x, other.y);
-        other_node.shortest_path_length = Some(shortest_path_length);
     }
 
     ///Returns true if there is an edge between Nodes a and b
@@ -149,14 +164,14 @@ impl HeightMap {
 
     fn get_node(&mut self, x: u16, y: u16) -> &mut Node {
         self.nodes
-            .get_mut(x as usize)
-            .unwrap()
             .get_mut(y as usize)
+            .unwrap()
+            .get_mut(x as usize)
             .unwrap()
     }
 
     fn get_node_immut(&self, x: u16, y: u16) -> &Node {
-        self.nodes.get(x as usize).unwrap().get(y as usize).unwrap()
+        self.nodes.get(y as usize).unwrap().get(x as usize).unwrap()
     }
 
     fn get_node_from_point(&mut self, identifier: &Point) -> &mut Node {
@@ -187,7 +202,7 @@ impl HeightMap {
     fn find_node_by_mark(&self, mark: u8) -> Result<Point, &str> {
         for (y, node_vec) in self.nodes.iter().enumerate() {
             for (x, node) in node_vec.iter().enumerate() {
-                if node.mark == b'S' {
+                if node.mark == mark {
                     return Ok(Point {
                         x: x as u16,
                         y: y as u16,
@@ -207,9 +222,22 @@ impl HeightMap {
             println!();
         }
     }
+
+    fn print_distance_map(&self) {
+        println!("HeightMap distances:");
+        for node_vec in &self.nodes {
+            for node in node_vec {
+                match node.shortest_path_length {
+                    Some(d) => print!("[{}]\t", d),
+                    None => print!("[ ]\t"),
+                }
+            }
+            println!();
+        }
+    }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct Point {
     x: u16,
     y: u16,
