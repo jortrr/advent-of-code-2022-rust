@@ -17,13 +17,26 @@ fn main() {
     let mut line = String::new();
     //---End---
 
+    let mut height_map = HeightMap::new();
+    let mut current_line = 0;
     while reader.read_line(&mut line).unwrap() > 0 {
         //Remove trailing new-line character
         line = line.trim().to_string();
         //Do stuff
-
+        if current_line >= height_map.nodes.len() {
+            height_map.nodes.push(Vec::new());
+        }
+        for c in line.as_bytes().iter() {
+            height_map
+                .nodes
+                .get_mut(current_line)
+                .unwrap()
+                .push(Node::new(*c));
+        }
+        current_line += 1;
         line.clear(); //Clear line string
     }
+    height_map.print_height_map();
     //Part 1
     writeln!(output_1_file, "{}", "To do").unwrap();
     //Part 2
@@ -60,13 +73,78 @@ impl HeightMap {
     }
 
     fn process_node(&mut self, identifier: &Point) {
-        let node = self.get_node_from_point(identifier);
-        //Check whether there is an edge between node and its neighbours (the difference between te elevations is atmost 1)
-        //TODO
-        //Add the neigbours to queue and set neighbour.shortest_path_length = node.shortest_path_length+1 if neighbour.used==false.
-        //TODO
+        let height: u16 = self.nodes.len() as u16;
+        let width: u16 = self.nodes.get(identifier.y as usize).unwrap().len() as u16;
+        //Check whether there is an edge between node and its neighbours (the difference between te elevations is atmost 1) and update neighbour.shortest_path_length and add to queue when needed
+        //Check top
+        if identifier.y > 0 {
+            self.process_neighbour_node(identifier, 0, -1);
+        }
+        //Check bottom
+        if identifier.y < height - 1 {
+            self.process_neighbour_node(identifier, 0, 1);
+        }
+        //Check left
+        if identifier.x > 0 {
+            self.process_neighbour_node(identifier, -1, 0);
+        }
+        //Check right
+        if identifier.x < width - 1 {
+            self.process_neighbour_node(identifier, 1, 0);
+        }
         //Set node.used to true
+        let node = self.get_node_from_point(identifier);
         node.used = true;
+    }
+
+    ///Add the neigbours to queue and set neighbour.shortest_path_length = node.shortest_path_length+1 if there is an edge between the neighbouring nodes and neighbour.used==false.
+    fn process_neighbour_node(
+        &mut self,
+        identifier: &Point,
+        x_translation: i32,
+        y_translation: i32,
+    ) {
+        let other = Point {
+            x: (identifier.x as i32 + x_translation) as u16,
+            y: (identifier.y as i32 + y_translation) as u16,
+        };
+        let node = self.get_node_immut(identifier.x, identifier.y);
+        let shortest_path_length = node.shortest_path_length.unwrap() + 1;
+        let other_node = self.get_node_immut(other.x, other.y);
+        if self.have_an_edge(&node, &other_node) && !other_node.used {
+            self.queue.push_back(other.clone());
+        }
+        let other_node = self.get_node(other.x, other.y);
+        other_node.shortest_path_length = Some(shortest_path_length);
+    }
+
+    ///Returns true if there is an edge between Nodes a and b
+    fn have_an_edge(&self, a: &Node, b: &Node) -> bool {
+        HeightMap::panic_if_mark_invalid(a.mark);
+        HeightMap::panic_if_mark_invalid(b.mark);
+        let a_mark = HeightMap::transform_starting_and_goal_marks(a.mark);
+        let b_mark = HeightMap::transform_starting_and_goal_marks(b.mark);
+        a_mark.abs_diff(b_mark) < 2
+    }
+
+    fn transform_starting_and_goal_marks(mark: u8) -> u8 {
+        let mut result = mark;
+        if result == b'S' {
+            result = b'a';
+        }
+        if result == b'E' {
+            result = b'z';
+        }
+        result
+    }
+
+    fn panic_if_mark_invalid(mark: u8) {
+        if mark < b'a' && mark != b'E' && mark != b'S' || mark > b'z' {
+            panic!(
+                "The mark of the Node is not in [a,z]+{{S,E}}. mark = {}",
+                mark
+            );
+        }
     }
 
     fn get_node(&mut self, x: u16, y: u16) -> &mut Node {
@@ -77,20 +155,35 @@ impl HeightMap {
             .unwrap()
     }
 
+    fn get_node_immut(&self, x: u16, y: u16) -> &Node {
+        self.nodes.get(x as usize).unwrap().get(y as usize).unwrap()
+    }
+
     fn get_node_from_point(&mut self, identifier: &Point) -> &mut Node {
         self.get_node(identifier.x, identifier.y)
     }
 
     ///Returns the identifier of the Node with mark 'S', or returns an error.
     fn find_starting_node(&self) -> Result<Point, &str> {
-        self.find_node_by_mark(b'S')
-        //Err("The HeightMap does not contain a Node with mark 'S', no starting node could be found.") //TODO
+        let result = self.find_node_by_mark(b'S');
+        match result {
+            Ok(value) => Ok(value),
+            Err(_) => Err("The HeightMap does not contain a Node with mark 'S', no starting node could be found.")
+        }
     }
 
+    ///Returns the identifier of the Node with mark 'E', or returns an error.
     fn find_goal_node(&self) -> Result<Point, &str> {
-        self.find_node_by_mark(b'E')
+        let result = self.find_node_by_mark(b'E');
+        match result {
+            Ok(value) => Ok(value),
+            Err(_) => Err(
+                "The HeightMap does not contain a Node with mark 'E', no goal node could be found.",
+            ),
+        }
     }
 
+    ///Returns the first occurence of the Node with parameter mark, or returns an error.
     fn find_node_by_mark(&self, mark: u8) -> Result<Point, &str> {
         for (y, node_vec) in self.nodes.iter().enumerate() {
             for (x, node) in node_vec.iter().enumerate() {
@@ -102,10 +195,21 @@ impl HeightMap {
                 }
             }
         }
-        Err("The HeightMap does not contain a Node with mark 'TODO'")
+        Err("The HeightMap does not contain a Node with the specified mark")
+    }
+
+    fn print_height_map(&self) {
+        println!("HeightMap:");
+        for node_vec in &self.nodes {
+            for node in node_vec {
+                print!("{}", node.mark as char);
+            }
+            println!();
+        }
     }
 }
 
+#[derive(Clone)]
 struct Point {
     x: u16,
     y: u16,
