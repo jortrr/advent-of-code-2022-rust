@@ -41,22 +41,32 @@ fn main() {
     }
     height_map.print_height_map();
     //Part 1
-    height_map.run_breadth_first_search_algorithm();
-    height_map.print_reachable_map();
-    height_map.print_distance_map();
+    let goal_point = height_map.find_goal_node().unwrap();
     let distance_to_goal = height_map
-        .get_node_from_point(&height_map.find_goal_node().unwrap())
-        .shortest_path_length
+        .run_breadth_first_search_algorithm(b'S', goal_point)
         .unwrap();
+    height_map.print_reachability_map();
+    height_map.print_distance_map();
     println!(
         "The shortest distance from 'S' to 'E' is {}.",
         distance_to_goal
     );
     writeln!(output_1_file, "{}", distance_to_goal).unwrap();
     //Part 2
+    height_map.reset();
+    let goal_point = height_map.find_goal_node().unwrap();
+    let distance_to_goal_part_2 = height_map
+        .run_breadth_first_search_algorithm(b'a', goal_point)
+        .unwrap();
+    height_map.print_distance_map();
+    println!(
+        "The shortest distance from any 'a' to 'E' is {}.",
+        distance_to_goal_part_2
+    );
     writeln!(output_2_file, "{}", "To do").unwrap();
 }
 
+//Heightmap
 struct HeightMap {
     nodes: Vec<Vec<Node>>,  //A 2D grid of Nodes
     queue: VecDeque<Point>, //A queue containing the identifiers of the Nodes to be processed
@@ -72,20 +82,27 @@ impl HeightMap {
 
     ///Run the breadth-first search algorithm on the HeightMap to find the shortest path from S to E.
     ///Source used: https://cp-algorithms.com/graph/breadth-first-search.html
-    fn run_breadth_first_search_algorithm(&mut self) {
-        let starting_node_point: Point = self.find_starting_node().unwrap();
-        let starting_node = self.get_node_from_point(&starting_node_point);
+    ///Returns the distance from start to goal
+    fn run_breadth_first_search_algorithm(&mut self, start_mark: u8, goal: Point) -> Option<u16> {
+        //TODO: Change function to give a start and a goal node by mark. Then start from E, and find the nearest A.
+        //TODO: Make a visualization
+        let starting_node = self.get_node_from_point(&goal);
         starting_node.used = true;
         starting_node.shortest_path_length = Some(0);
 
-        self.queue.push_back(starting_node_point);
+        self.queue.push_back(goal);
         while !self.queue.is_empty() {
             //Run the BFS algorithm
             let current_node: Point = self.queue.pop_front().unwrap();
+            if self.get_node_from_point(&current_node).mark == start_mark {
+                //println!("Goal found on Node {:?}", current_node);
+                return self.get_node_from_point(&current_node).shortest_path_length;
+            }
             println!("Running the BFS algorithm on Node {:?}", current_node);
             self.process_node(&current_node);
             println!();
         }
+        None
     }
 
     fn process_node(&mut self, identifier: &Point) {
@@ -125,12 +142,13 @@ impl HeightMap {
         let node = self.get_node_immut(identifier.x, identifier.y);
         let shortest_path_length = node.shortest_path_length.unwrap() + 1;
         let other_node = self.get_node_immut(other.x, other.y);
-        if self.have_an_edge(&node, &other_node) && !other_node.used {
+        if self.have_an_edge(&other_node, &node) && !other_node.used {
             self.queue.push_back(other.clone());
             println!(", added Node to self.queue.");
             let other_node = self.get_node(other.x, other.y);
             other_node.shortest_path_length = Some(shortest_path_length);
             other_node.used = true;
+            other_node.parent = Some(identifier.clone());
         } else {
             println!();
         }
@@ -240,7 +258,7 @@ impl HeightMap {
         }
     }
 
-    fn print_reachable_map(&self) {
+    fn print_reachability_map(&self) {
         println!("HeightMap reachability:");
         for node_vec in &self.nodes {
             for node in node_vec {
@@ -252,14 +270,26 @@ impl HeightMap {
             println!();
         }
     }
+
+    fn reset(&mut self) {
+        for node_vec in &mut self.nodes {
+            for node in node_vec {
+                node.used = false;
+                node.shortest_path_length = None;
+            }
+        }
+        self.queue.clear();
+    }
 }
 
+//Point
 #[derive(Clone, Debug)]
 struct Point {
     x: u16,
     y: u16,
 }
 
+//Node
 struct Node {
     //The identifier of the Node is its 2D index in the nodes 2D grid
     used: bool,
