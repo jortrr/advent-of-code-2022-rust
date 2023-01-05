@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::collections::VecDeque;
 use std::env;
 use std::io::{BufRead, Write};
@@ -41,15 +42,17 @@ fn main() {
     height_map.print_height_map();
     //Part 1
     height_map.run_breadth_first_search_algorithm();
+    height_map.print_reachable_map();
     height_map.print_distance_map();
+    let distance_to_goal = height_map
+        .get_node_from_point(&height_map.find_goal_node().unwrap())
+        .shortest_path_length
+        .unwrap();
     println!(
         "The shortest distance from 'S' to 'E' is {}.",
-        height_map
-            .get_node_from_point(&height_map.find_goal_node().unwrap())
-            .shortest_path_length
-            .unwrap()
+        distance_to_goal
     );
-    writeln!(output_1_file, "{}", "To do").unwrap();
+    writeln!(output_1_file, "{}", distance_to_goal).unwrap();
     //Part 2
     writeln!(output_2_file, "{}", "To do").unwrap();
 }
@@ -133,13 +136,13 @@ impl HeightMap {
         }
     }
 
-    ///Returns true if there is an edge between Nodes a and b
+    ///Returns true if there is an edge from Node a and to Node b
     fn have_an_edge(&self, a: &Node, b: &Node) -> bool {
         HeightMap::panic_if_mark_invalid(a.mark);
         HeightMap::panic_if_mark_invalid(b.mark);
         let a_mark = HeightMap::transform_starting_and_goal_marks(a.mark);
         let b_mark = HeightMap::transform_starting_and_goal_marks(b.mark);
-        a_mark.abs_diff(b_mark) < 2
+        a_mark + 1 >= b_mark
     }
 
     fn transform_starting_and_goal_marks(mark: u8) -> u8 {
@@ -221,6 +224,7 @@ impl HeightMap {
             }
             println!();
         }
+        println!();
     }
 
     fn print_distance_map(&self) {
@@ -230,6 +234,19 @@ impl HeightMap {
                 match node.shortest_path_length {
                     Some(d) => print!("[{}]\t", d),
                     None => print!("[ ]\t"),
+                }
+            }
+            println!();
+        }
+    }
+
+    fn print_reachable_map(&self) {
+        println!("HeightMap reachability:");
+        for node_vec in &self.nodes {
+            for node in node_vec {
+                match node.shortest_path_length {
+                    Some(_) => print!("{}", format!("{}", node.mark as char).on_green()),
+                    None => print!("{}", format!("{}", node.mark as char).on_red()),
                 }
             }
             println!();
