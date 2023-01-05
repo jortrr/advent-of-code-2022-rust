@@ -1,24 +1,36 @@
 use colored::Colorize;
 use std::collections::VecDeque;
 use std::env;
-use std::io::{BufRead, Write};
+use std::fs::File;
+use std::io::{BufRead, BufReader, Write};
 
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
-    //---Copy this to every puzzle program main---
     // File paths
     let relative_puzzle_path = "puzzle/";
-    let input_file_path = format!("{}{}", relative_puzzle_path, "INPUT");
+    let input_file_path = format!("{}{}", relative_puzzle_path, "EXAMPLE_INPUT");
     let output_1_path = format!("{}{}", relative_puzzle_path, "OUTPUT_PART_ONE");
     let output_2_path = format!("{}{}", relative_puzzle_path, "OUTPUT_PART_TWO");
 
-    //Open file in Rust
-    let input_file = std::fs::File::open(input_file_path).unwrap();
-    let mut output_1_file = std::fs::File::create(output_1_path).unwrap();
-    let mut output_2_file = std::fs::File::create(output_2_path).unwrap();
-    let mut reader = std::io::BufReader::new(input_file);
+    //Open file in Rust, and parse the contents
+    let input_file = File::open(input_file_path).unwrap();
+    let mut height_map = parse(&input_file);
+    //Print the data structure that was created by parse()
+    height_map.print_height_map();
+    //Part 1
+    let distance_to_goal = do_part_one(&mut height_map);
+    let mut output_1_file = File::create(output_1_path).unwrap();
+    writeln!(output_1_file, "{}", distance_to_goal).unwrap();
+    //Part 2
+    height_map.reset();
+    let distance_to_a = do_part_two(&mut height_map);
+    let mut output_2_file = File::create(output_2_path).unwrap();
+    writeln!(output_2_file, "{}", distance_to_a).unwrap();
+}
+
+fn parse(input_file: &File) -> HeightMap {
+    let mut reader = BufReader::new(input_file);
     let mut line = String::new();
-    //---End---
 
     let mut height_map = HeightMap::new();
     let mut current_line = 0;
@@ -39,8 +51,10 @@ fn main() {
         current_line += 1;
         line.clear(); //Clear line string
     }
-    height_map.print_height_map();
-    //Part 1
+    height_map
+}
+
+fn do_part_one(height_map: &mut HeightMap) -> u16 {
     let goal_point = height_map.find_goal_node().unwrap();
     let distance_to_goal = height_map
         .run_breadth_first_search_algorithm(b'S', goal_point)
@@ -51,19 +65,20 @@ fn main() {
         "The shortest distance from 'S' to 'E' is {}.",
         distance_to_goal
     );
-    writeln!(output_1_file, "{}", distance_to_goal).unwrap();
-    //Part 2
-    height_map.reset();
+    distance_to_goal
+}
+
+fn do_part_two(height_map: &mut HeightMap) -> u16 {
     let goal_point = height_map.find_goal_node().unwrap();
-    let distance_to_goal_part_2 = height_map
+    let distance_to_goal = height_map
         .run_breadth_first_search_algorithm(b'a', goal_point)
         .unwrap();
     height_map.print_distance_map();
     println!(
         "The shortest distance from any 'a' to 'E' is {}.",
-        distance_to_goal_part_2
+        distance_to_goal
     );
-    writeln!(output_2_file, "{}", "To do").unwrap();
+    distance_to_goal
 }
 
 //Heightmap
@@ -280,6 +295,8 @@ impl HeightMap {
         }
         self.queue.clear();
     }
+
+    fn render(&self) {}
 }
 
 //Point
