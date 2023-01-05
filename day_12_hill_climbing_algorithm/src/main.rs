@@ -4,6 +4,7 @@ use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
 
+//Program main
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
     // File paths
@@ -81,6 +82,7 @@ fn do_part_two(height_map: &mut HeightMap) -> u16 {
     distance_to_goal
 }
 
+//All of the data structures
 //Heightmap
 struct HeightMap {
     nodes: Vec<Vec<Node>>,  //A 2D grid of Nodes
