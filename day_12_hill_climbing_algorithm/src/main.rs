@@ -323,7 +323,7 @@ impl HeightMap {
         let mut parent: Point = parents.first().unwrap().clone();
         for (j, node_vec) in self.nodes.iter().enumerate() {
             for (i, node) in node_vec.iter().enumerate() {
-                let mut mark = format!("{}", node.mark as char).white();
+                let mut mark = format!("{}", node.mark as char).bright_white();
                 let current_point = Point {
                     x: i as u16,
                     y: j as u16,
@@ -348,7 +348,7 @@ impl HeightMap {
                     parent = current_point;
                 }
                 if node.mark as char == 'E' {
-                    mark = mark.red();
+                    mark = mark.bright_green();
                 }
                 print!("{}", mark);
             }
