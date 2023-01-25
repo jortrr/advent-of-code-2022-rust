@@ -3,13 +3,14 @@ use std::collections::VecDeque;
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
+use std::ops::Index;
 
 //Program main
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
     // File paths
     let relative_puzzle_path = "puzzle/";
-    let input_file_path = format!("{}{}", relative_puzzle_path, "EXAMPLE_INPUT");
+    let input_file_path = format!("{}{}", relative_puzzle_path, "INPUT");
     let output_1_path = format!("{}{}", relative_puzzle_path, "OUTPUT_PART_ONE");
     let output_2_path = format!("{}{}", relative_puzzle_path, "OUTPUT_PART_TWO");
 
@@ -57,28 +58,30 @@ fn parse(input_file: &File) -> HeightMap {
 
 fn do_part_one(height_map: &mut HeightMap) -> u16 {
     let goal_point = height_map.find_goal_node().unwrap();
-    let distance_to_goal = height_map
+    let (distance_to_goal, start_point) = height_map
         .run_breadth_first_search_algorithm(b'S', goal_point)
         .unwrap();
-    height_map.print_reachability_map();
     height_map.print_distance_map();
     println!(
         "The shortest distance from 'S' to 'E' is {}.",
         distance_to_goal
     );
+    height_map.print_shortest_path(&start_point);
     distance_to_goal
 }
 
 fn do_part_two(height_map: &mut HeightMap) -> u16 {
     let goal_point = height_map.find_goal_node().unwrap();
-    let distance_to_goal = height_map
+    let (distance_to_goal, start_point) = height_map
         .run_breadth_first_search_algorithm(b'a', goal_point)
         .unwrap();
     height_map.print_distance_map();
+    height_map.print_reachability_map();
     println!(
         "The shortest distance from any 'a' to 'E' is {}.",
         distance_to_goal
     );
+    height_map.print_shortest_path(&start_point);
     distance_to_goal
 }
 
@@ -100,7 +103,11 @@ impl HeightMap {
     ///Run the breadth-first search algorithm on the HeightMap to find the shortest path from S to E.
     ///Source used: https://cp-algorithms.com/graph/breadth-first-search.html
     ///Returns the distance from start to goal
-    fn run_breadth_first_search_algorithm(&mut self, start_mark: u8, goal: Point) -> Option<u16> {
+    fn run_breadth_first_search_algorithm(
+        &mut self,
+        start_mark: u8,
+        goal: Point,
+    ) -> Option<(u16, Point)> {
         //TODO: Change function to give a start and a goal node by mark. Then start from E, and find the nearest A.
         //TODO: Make a visualization
         let starting_node = self.get_node_from_point(&goal);
@@ -113,7 +120,12 @@ impl HeightMap {
             let current_node: Point = self.queue.pop_front().unwrap();
             if self.get_node_from_point(&current_node).mark == start_mark {
                 //println!("Goal found on Node {:?}", current_node);
-                return self.get_node_from_point(&current_node).shortest_path_length;
+                return Some((
+                    self.get_node_from_point(&current_node)
+                        .shortest_path_length
+                        .unwrap(),
+                    current_node,
+                ));
             }
             println!("Running the BFS algorithm on Node {:?}", current_node);
             self.process_node(&current_node);
@@ -298,11 +310,56 @@ impl HeightMap {
         self.queue.clear();
     }
 
-    fn render(&self) {}
+    fn print_shortest_path(&self, start: &Point) {
+        println!("Shortest path to E:");
+        let mut parents: Vec<Point> = vec![start.clone()];
+        let mut current_node = self.get_node_immut(start.x, start.y);
+        while current_node.parent.is_some() {
+            parents.push(current_node.parent.as_ref().unwrap().clone());
+            current_node = self.get_node_immut(
+                current_node.parent.as_ref().unwrap().x,
+                current_node.parent.as_ref().unwrap().y,
+            );
+        }
+        let mut parent: Point = parents.first().unwrap().clone();
+        for (j, node_vec) in self.nodes.iter().enumerate() {
+            for (i, node) in node_vec.iter().enumerate() {
+                let mut mark = format!("{}", node.mark as char).white();
+                let current_point = Point {
+                    x: i as u16,
+                    y: j as u16,
+                };
+                if parents.contains(&current_point) {
+                    let index_of_next_parent =
+                        parents.iter().position(|x| x == &current_point).unwrap() + 1;
+                    if index_of_next_parent < parents.len() {
+                        let next_parent = parents.get(index_of_next_parent).unwrap();
+                        if next_parent.x < current_point.x {
+                            mark = format!("<").red();
+                        } else if next_parent.x > current_point.x {
+                            mark = format!(">").red();
+                        } else if next_parent.y > current_point.y {
+                            mark = format!("v").red();
+                        } else if next_parent.y < current_point.y {
+                            mark = format!("^").red();
+                        } else {
+                            mark = mark.red();
+                        }
+                    }
+                    parent = current_point;
+                }
+                if node.mark as char == 'E' {
+                    mark = mark.red();
+                }
+                print!("{}", mark);
+            }
+            println!();
+        }
+    }
 }
 
 //Point
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct Point {
     x: u16,
     y: u16,
