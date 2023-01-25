@@ -3,7 +3,6 @@ use std::collections::VecDeque;
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
-use std::ops::Index;
 
 //Program main
 fn main() {

@@ -7,4 +7,3 @@ edition = "2021"
 
 [dependencies]
 colored = "2.0.0"
-ncurses = "5.101.0"
