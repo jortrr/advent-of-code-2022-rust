@@ -19,9 +19,15 @@ fn main() {
 
     //Create our main Advent of Code puzzle data structure from the INPUT file
     let mut height_map: HeightMap = parse(INPUT_PATH).unwrap();
+    if !height_map.is_valid() {
+        panic!(
+            "The HeightMap parsed from {} is in an invalid state, this should never happen.",
+            INPUT_PATH
+        );
+    }
 
     //Print the data structure that was created by parse()
-    height_map.print_height_map();
+    height_map.print();
 
     //Solve part one of the Advent of Code puzzle
     let distance_to_goal = solve_part_one(&mut height_map);
@@ -42,9 +48,12 @@ fn parse(input_file_path: &str) -> Result<HeightMap, std::io::Error> {
     for (row, line) in reader.lines().enumerate() {
         //Remove leading trailing new-line characters
         let line: String = line?.trim().to_string();
+        if row == 0 {
+            height_map.set_row_length(line.len() as u16);
+        }
         //Add node to the HeightMap
-        for c in line.as_bytes() {
-            height_map.add_node(row, *c);
+        for c in line.chars() {
+            height_map.add_node(c);
         }
     }
     Ok(height_map)
@@ -52,31 +61,28 @@ fn parse(input_file_path: &str) -> Result<HeightMap, std::io::Error> {
 
 ///Solve part one of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_one(height_map: &mut HeightMap) -> u16 {
-    let goal_point = height_map.find_goal_node().unwrap();
     let (distance_to_goal, start_point) = height_map
-        .run_breadth_first_search_algorithm(b'S', goal_point)
+        .run_breadth_first_search_algorithm('S', 'E')
         .unwrap();
-    height_map.print_distance_map();
+    height_map.print_reachability_map();
     println!(
         "The shortest distance from 'S' to 'E' is {}.",
         distance_to_goal
     );
-    height_map.print_shortest_path(&start_point);
+    height_map.print_shortest_path_to_goal(&start_point);
     distance_to_goal
 }
 
 ///Solve part two of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_two(height_map: &mut HeightMap) -> u16 {
-    let goal_point = height_map.find_goal_node().unwrap();
     let (distance_to_goal, start_point) = height_map
-        .run_breadth_first_search_algorithm(b'a', goal_point)
+        .run_breadth_first_search_algorithm('a', 'E')
         .unwrap();
-    height_map.print_distance_map();
-    height_map.print_reachability_map();
+    //height_map.print_distance_map();
     println!(
         "The shortest distance from any 'a' to 'E' is {}.",
         distance_to_goal
     );
-    height_map.print_shortest_path(&start_point);
+    height_map.print_shortest_path_to_goal(&start_point);
     distance_to_goal
 }
