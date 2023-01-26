@@ -35,7 +35,7 @@ impl HeightMap {
     }
 
     ///Run the breadth-first search algorithm on the HeightMap to find the shortest path from S to E.
-    ///Source used: https://cp-algorithms.com/graph/breadth-first-search.html
+    ///Source used: <https://cp-algorithms.com/graph/breadth-first-search.html>
     ///Returns the distance from start to goal, starts at goal
     pub fn run_breadth_first_search_algorithm(
         &mut self,
@@ -66,6 +66,7 @@ impl HeightMap {
         None
     }
 
+    ///Processes a node according to the BFS algorithm
     fn process_node(&mut self, index: u16) {
         //Check whether there is an edge between node and its neighbours (the difference between te elevations is atmost 1) and update neighbour.shortest_path_length and add to queue when needed
         //Check top
@@ -113,6 +114,7 @@ impl HeightMap {
         a_mark as u8 + 1 >= b_mark as u8
     }
 
+    ///Sets 'S' to 'a' and 'E' to 'z', so HeightMap height calculation is possible
     fn transform_starting_and_goal_marks(mark: char) -> char {
         let mut result = mark;
         if result == 'S' {
@@ -154,6 +156,7 @@ impl HeightMap {
         }
     }
 
+    ///Prints distance to goal of each element of the HeightMap
     pub fn print_distance_map(&self) {
         println!("HeightMap distances:");
         for (i, node) in self.nodes.iter().enumerate() {
@@ -168,6 +171,7 @@ impl HeightMap {
         println!();
     }
 
+    ///Prints each element in green if they have a path to the goal, red otherwise
     pub fn print_reachability_map(&self) {
         println!("HeightMap reachability:");
         for (i, node) in self.nodes.iter().enumerate() {
@@ -181,6 +185,7 @@ impl HeightMap {
         }
     }
 
+    ///Resets the HeightMap to its original state, resets the BFS algorithm
     pub fn reset(&mut self) {
         for node in &mut self.nodes {
             node.used = false;
@@ -189,6 +194,7 @@ impl HeightMap {
         self.queue.clear();
     }
 
+    ///Print the shortest path from the starting_node to the BFS goal node in red
     pub fn print_shortest_path_to_goal(&self, starting_node: &Node) {
         println!("Shortest path from {} to E:", starting_node.mark);
         let mut parents: Vec<u16> = vec![starting_node.index];
