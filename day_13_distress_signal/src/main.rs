@@ -16,7 +16,7 @@ static ANSWER_PART_TWO_PATH: &str = "puzzle/ANSWER_PART_TWO";
 //Program main
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
-    let list: &str = "[1,2,3]";
+    let list: &str = "[1,2,[4,5],3]";
     let packet_data = PacketData::parse_list(list).unwrap();
     println!("packet_data: {:?}", packet_data);
 
