@@ -44,30 +44,29 @@ impl HeightMap {
     ) -> Option<(u16, Node)> {
         let starting_node_index: u16 = self.get_node_index_by_mark(goal_mark).unwrap();
         let starting_node: &mut Node = self.nodes.get_mut(starting_node_index as usize).unwrap();
-        starting_node.used = true;
-        starting_node.shortest_path_length = Some(0);
+        starting_node.set_as_starting_node();
 
-        self.queue.push_back(starting_node.index);
+        self.queue.push_back(starting_node.index());
         while !self.queue.is_empty() {
             //Run the BFS algorithm
             let current_node_index: u16 = self.queue.pop_front().unwrap();
             let current_node: &Node = self.nodes.get(current_node_index as usize).unwrap();
-            if current_node.mark == start_mark {
+            if current_node.mark() == start_mark {
                 //Found a path from goal to start
                 return Some((
-                    current_node.shortest_path_length.unwrap(),
+                    current_node.shortest_path_length().unwrap(),
                     current_node.clone(),
                 ));
             }
             //println!("Running the BFS algorithm on Node {:?}", current_node);
-            self.process_node(current_node.index);
+            self.visit_node(current_node.index());
             //println!();
         }
         None
     }
 
-    ///Processes a node according to the BFS algorithm
-    fn process_node(&mut self, index: u16) {
+    ///Visits a node according to the BFS algorithm
+    fn visit_node(&mut self, index: u16) {
         //Check whether there is an edge between node and its neighbours (the difference between te elevations is atmost 1) and update neighbour.shortest_path_length and add to queue when needed
         //Check top
         if index >= self.row_length {
@@ -87,30 +86,28 @@ impl HeightMap {
         }
     }
 
-    ///Add the neigbours to queue and set neighbour.shortest_path_length = node.shortest_path_length+1 if there is an edge between the neighbouring nodes and neighbour.used==false.
+    ///Add the neigbours to queue and set neighbour.shortest_path_length = node.shortest_path_length()+1 if there is an edge between the neighbouring nodes and neighbour.used==false.
     fn process_neighbour_node(&mut self, node_index: u16, neighbour_index: u16) {
         //print!("Processing neighbour Node {:?}", other);
         let node: &Node = self.nodes.get(node_index as usize).unwrap();
-        let shortest_path_length: u16 = node.shortest_path_length.unwrap() + 1;
+        let shortest_path_length: u16 = node.shortest_path_length().unwrap() + 1;
         let neighbour: &Node = self.nodes.get(neighbour_index as usize).unwrap();
-        if self.have_an_edge(&neighbour, &node) && !neighbour.used {
-            self.queue.push_back(neighbour.index);
+        if self.have_an_edge(&neighbour, &node) && !neighbour.used() {
+            self.queue.push_back(neighbour.index());
             //println!(", added Node to self.queue.");
             let neighbour: &mut Node = self.nodes.get_mut(neighbour_index as usize).unwrap();
-            neighbour.shortest_path_length = Some(shortest_path_length);
-            neighbour.used = true;
-            neighbour.parent = Some(node_index);
+            neighbour.set_parent(node_index, shortest_path_length);
         } else {
             //println!();
         }
     }
 
-    ///Returns true if there is an edge from Node a and to Node b
+    ///Returns true if there is an edge from Node a to Node b
     fn have_an_edge(&self, a: &Node, b: &Node) -> bool {
-        HeightMap::panic_if_mark_invalid(a.mark);
-        HeightMap::panic_if_mark_invalid(b.mark);
-        let a_mark = HeightMap::transform_starting_and_goal_marks(a.mark);
-        let b_mark = HeightMap::transform_starting_and_goal_marks(b.mark);
+        HeightMap::panic_if_mark_invalid(a.mark());
+        HeightMap::panic_if_mark_invalid(b.mark());
+        let a_mark = HeightMap::transform_starting_and_goal_marks(a.mark());
+        let b_mark = HeightMap::transform_starting_and_goal_marks(b.mark());
         a_mark as u8 + 1 >= b_mark as u8
     }
 
@@ -139,20 +136,26 @@ impl HeightMap {
     ///Returns the first occurence of the Node with parameter mark, or returns an error.
     fn get_node_index_by_mark(&self, mark: char) -> Result<u16, &str> {
         for node in self.nodes.iter() {
-            if node.mark == mark {
-                return Ok(node.index);
+            if node.mark() == mark {
+                return Ok(node.index());
             }
         }
         Err("The HeightMap does not contain a Node with the specified mark")
     }
 
+    ///Prints a newline if the index is the rightmost Node on a row in the HeightMap 2D grid of Nodes
+    pub fn print_line_at_row_end(&self, index: u16) {
+        if (index + 1) % self.row_length == 0 {
+            println!();
+        }
+    }
+
+    ///Prints the HeightMap
     pub fn print(&self) {
         println!("HeightMap:");
         for (i, node) in self.nodes.iter().enumerate() {
-            print!("{}", node.mark);
-            if (i + 1) as u16 % self.row_length == 0 {
-                println!();
-            }
+            print!("{}", node.mark());
+            self.print_line_at_row_end(i as u16);
         }
     }
 
@@ -160,13 +163,11 @@ impl HeightMap {
     pub fn print_distance_map(&self) {
         println!("HeightMap distances:");
         for (i, node) in self.nodes.iter().enumerate() {
-            match node.shortest_path_length {
+            match node.shortest_path_length() {
                 Some(d) => print!("[{}]\t", d),
                 None => print!("[ ]\t"),
             }
-            if (i + 1) as u16 % self.row_length == 0 {
-                println!();
-            }
+            self.print_line_at_row_end(i as u16);
         }
         println!();
     }
@@ -175,64 +176,59 @@ impl HeightMap {
     pub fn print_reachability_map(&self) {
         println!("HeightMap reachability:");
         for (i, node) in self.nodes.iter().enumerate() {
-            match node.shortest_path_length {
-                Some(_) => print!("{}", format!("{}", node.mark as char).on_green()),
-                None => print!("{}", format!("{}", node.mark as char).on_red()),
+            match node.shortest_path_length() {
+                Some(_) => print!("{}", format!("{}", node.mark() as char).on_green()),
+                None => print!("{}", format!("{}", node.mark() as char).on_red()),
             }
-            if (i + 1) as u16 % self.row_length == 0 {
-                println!();
-            }
+            self.print_line_at_row_end(i as u16);
         }
     }
 
     ///Resets the HeightMap to its original state, resets the BFS algorithm
     pub fn reset(&mut self) {
         for node in &mut self.nodes {
-            node.used = false;
-            node.shortest_path_length = None;
+            node.reset();
         }
         self.queue.clear();
     }
 
     ///Print the shortest path from the starting_node to the BFS goal node in red
     pub fn print_shortest_path_to_goal(&self, starting_node: &Node) {
-        println!("Shortest path from {} to E:", starting_node.mark);
-        let mut parents: Vec<u16> = vec![starting_node.index];
+        println!("Shortest path from {} to E:", starting_node.mark());
+        let mut parents: Vec<u16> = vec![starting_node.index()];
         let mut current_node: &Node = starting_node;
-        while current_node.parent.is_some() {
-            parents.push(current_node.parent.unwrap());
+        while current_node.parent().is_some() {
+            parents.push(current_node.parent().unwrap());
             current_node = self
                 .nodes
-                .get(current_node.parent.unwrap() as usize)
+                .get(current_node.parent().unwrap() as usize)
                 .unwrap();
         }
         for (i, node) in self.nodes.iter().enumerate() {
-            let mut mark = format!("{}", node.mark).bright_white();
-            if parents.contains(&node.index) {
-                let next_parent_index = node.parent;
+            let mut mark = format!("{}", node.mark()).bright_white();
+            if parents.contains(&node.index()) {
+                let next_parent_index = node.parent();
 
                 if next_parent_index.is_some() {
                     let next_parent_index = next_parent_index.unwrap();
-                    if node.index - 1 == next_parent_index {
+                    if node.index() - 1 == next_parent_index {
                         mark = format!("<").red();
-                    } else if node.index + 1 == next_parent_index {
+                    } else if node.index() + 1 == next_parent_index {
                         mark = format!(">").red();
-                    } else if node.index + self.row_length == next_parent_index {
+                    } else if node.index() + self.row_length == next_parent_index {
                         mark = format!("v").red();
-                    } else if node.index - self.row_length == next_parent_index {
+                    } else if node.index() - self.row_length == next_parent_index {
                         mark = format!("^").red();
                     } else {
                         mark = mark.red();
                     }
                 }
             }
-            if node.mark == 'E' {
+            if node.mark() == 'E' {
                 mark = mark.bright_green();
             }
             print!("{}", mark);
-            if (i + 1) as u16 % self.row_length == 0 {
-                println!();
-            }
+            self.print_line_at_row_end(i as u16);
         }
     }
 }

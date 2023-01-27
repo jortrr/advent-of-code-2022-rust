@@ -3,7 +3,6 @@ use std::{
     env, fs,
     io::{self, BufRead},
 };
-
 use structs::height_map::HeightMap;
 
 mod structs;
