@@ -1,4 +1,7 @@
-use super::monkey::Monkey;
+use super::{
+    item::Item,
+    monkey::{self, Monkey},
+};
 
 #[derive(Clone)]
 pub struct MonkeyInTheMiddle {
@@ -16,11 +19,11 @@ impl MonkeyInTheMiddle {
         }
     }
 
-    pub fn play_round_part_1(&mut self) {
+    pub fn play_round_part_one(&mut self) {
         self.play_round(3.0);
     }
 
-    pub fn play_round_part_2(&mut self) {
+    pub fn play_round_part_two(&mut self) {
         self.play_round(1.0);
         //Prevent the worry_levels from ballooning by moduloing them by the least common multiple of all the test_divisors
         //The lcm contains every test_divisor. Removing the part of an int that was cleanly divisible by a multiple of a divisor
@@ -33,16 +36,22 @@ impl MonkeyInTheMiddle {
 
     ///Play a round of Monkey in the Middle
     pub fn play_round(&mut self, worry_level_divisor: f64) {
-        for monkey in &mut self.monkeys {
+        for i in 0..self.monkeys.len() {
             //Inspect and test each item
+            let monkey: &mut Monkey = self.monkeys.get_mut(i).unwrap();
             monkey.play_round(worry_level_divisor);
 
             //Transfer all the items to the next Monkey
+            let mut items: Vec<Item> = Vec::new();
             let mut item_option = monkey.pop_item();
             while item_option.is_some() {
                 let item = item_option.unwrap();
-                self.monkeys[item.monkey_index()].push_item(item);
+                items.push(item);
                 item_option = monkey.pop_item();
+            }
+            while !items.is_empty() {
+                let item = items.pop().unwrap();
+                self.monkeys[item.monkey_index()].push_item(item);
             }
         }
         self.round += 1;
@@ -105,5 +114,9 @@ impl MonkeyInTheMiddle {
             self.least_common_multiple *= monkey.test_divisor() as u64;
         }
         println!("Least common multiple: {}", self.least_common_multiple);
+    }
+
+    pub fn add_monkey(&mut self, monkey: Monkey) {
+        self.monkeys.push(monkey);
     }
 }

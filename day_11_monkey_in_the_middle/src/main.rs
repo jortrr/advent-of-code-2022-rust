@@ -1,15 +1,21 @@
-use crate::structs::{monkey::Monkey, monkey_in_the_middle::MonkeyInTheMiddle};
+use structs::monkey_builder::{self, MonkeyBuilder};
+
+use crate::structs::{
+    item::Item,
+    monkey::{Monkey, Operation},
+    monkey_in_the_middle::MonkeyInTheMiddle,
+};
 use core::panic;
 use std::{
     env, fs,
-    io::{BufRead, Write},
+    io::{self, BufRead},
 };
-use structs::monkey_in_the_middle;
 
 mod structs;
 
 // File paths
 static INPUT_PATH: &str = "puzzle/INPUT";
+static EXAMPLE_INPUT_PATH: &str = "puzzle/EXAMPLE_INPUT";
 static ANSWER_PART_ONE_PATH: &str = "puzzle/ANSWER_PART_ONE";
 static ANSWER_PART_TWO_PATH: &str = "puzzle/ANSWER_PART_TWO";
 
@@ -40,21 +46,21 @@ fn main() -> std::io::Result<()> {
 
 ///Parse the INPUT file at the relative input_file_path into our main data structure, MonkeyInTheMiddle
 fn parse(input_file_path: &str) -> Result<MonkeyInTheMiddle, std::io::Error> {
+    let input_file: fs::File = fs::File::open(input_file_path)?;
+    let reader: io::BufReader<fs::File> = io::BufReader::new(input_file);
     //Temporary variables to construct a Monkey
     let mut monkey_in_the_middle = MonkeyInTheMiddle::new();
-    let mut monkey_in_construction = Monkey::new();
+    let mut monkey_builder = MonkeyBuilder::new();
     let mut monkey_counter = 0;
 
-    while reader.read_line(&mut line).unwrap() > 0 {
+    for line in reader.lines() {
         //Remove trailing new-line character
+        let line = line?.trim().to_string();
         print!("line:\t{}", line);
-        line = line.trim().to_string();
-        //Do stuff
-        //Part 1
         if line.is_empty() {
             //Monkey found, add Monkey to MonkeyInTheMiddle
-            monkey_in_the_middle.monkeys.push(monkey_in_construction);
-            monkey_in_construction = Monkey::new();
+            monkey_in_the_middle.add_monkey(monkey_builder.build());
+            monkey_builder = MonkeyBuilder::new();
             monkey_counter += 1;
             continue;
         }
@@ -63,7 +69,6 @@ fn parse(input_file_path: &str) -> Result<MonkeyInTheMiddle, std::io::Error> {
 
         if first_word == "Monkey" {
             //Skip Monkey line
-            line.clear();
             continue;
         }
         let last_word = *words.get(words.len() - 1).unwrap();
@@ -76,26 +81,24 @@ fn parse(input_file_path: &str) -> Result<MonkeyInTheMiddle, std::io::Error> {
                     word.pop();
                 }
                 let worry_level: u64 = word.parse().unwrap();
-                monkey_in_construction
+                monkey_builder
                     .items
                     .push(Item::new(worry_level, monkey_counter))
             }
         } else if first_word == "Operation:" {
             //Operation line
-            monkey_in_construction.operation = Operation::new(second_to_last_word, last_word);
+            monkey_builder.operation = Operation::new(second_to_last_word, last_word);
         } else if first_word == "Test:" {
             //Test line
-            monkey_in_construction.test_divisor = last_word.to_string().parse().unwrap();
+            monkey_builder.test_divisor = last_word.to_string().parse().unwrap();
         } else if first_word == "If" {
             let second_word = *words.get(1).unwrap();
             if second_word == "true:" {
                 //Throw to monkey if test is true
-                monkey_in_construction.monkey_if_test_is_true =
-                    last_word.to_string().parse().unwrap();
+                monkey_builder.monkey_if_test_is_true = last_word.to_string().parse().unwrap();
             } else if second_word == "false:" {
                 //Throw to monkey if test is false
-                monkey_in_construction.monkey_if_test_is_false =
-                    last_word.to_string().parse().unwrap();
+                monkey_builder.monkey_if_test_is_false = last_word.to_string().parse().unwrap();
             } else {
                 panic!(
                     "Invalid input on line: {}; expected second word ({}) to be 'true:' or 'false:'.",
@@ -110,11 +113,10 @@ fn parse(input_file_path: &str) -> Result<MonkeyInTheMiddle, std::io::Error> {
                 first_word
             );
         }
-
-        line.clear(); //Clear line string
     }
     //Monkey found, add Monkey to MonkeyInTheMiddle
-    monkey_in_the_middle.monkeys.push(monkey_in_construction);
+    monkey_in_the_middle.add_monkey(monkey_builder.build());
+    Ok(monkey_in_the_middle)
 }
 
 ///Solve part one of the Advent of Code 2022 puzzle, returns the puzzle answer
@@ -123,7 +125,7 @@ fn solve_part_one(monkey_in_the_middle: &mut MonkeyInTheMiddle) -> u64 {
     println!("Part 1:");
     monkey_in_the_middle.print_monkeys();
     for _ in 0..amount_of_rounds {
-        monkey_in_the_middle.play_round_part_1();
+        monkey_in_the_middle.play_round_part_one();
         monkey_in_the_middle.print_round_result();
         println!();
     }
@@ -148,7 +150,7 @@ fn solve_part_two(monkey_in_the_middle: &mut MonkeyInTheMiddle) -> u64 {
 
     monkey_in_the_middle.print_monkeys();
     for _ in 0..amount_of_rounds {
-        monkey_in_the_middle.play_round_part_2();
+        monkey_in_the_middle.play_round_part_two();
         monkey_in_the_middle.print_round_result();
         println!();
     }

@@ -13,7 +13,7 @@ pub enum Operation {
 }
 
 impl Operation {
-    fn new(operation: &str, operand: &str) -> Operation {
+    pub fn new(operation: &str, operand: &str) -> Operation {
         match operation {
             "+" => Operation::Add(operand.to_string().parse().unwrap()),
             "*" => match operand {
@@ -49,14 +49,21 @@ impl Monkey {
         }
     }
 
-    pub fn new() -> Monkey {
+    pub fn new(
+        items: Vec<Item>,
+        operation: Operation,
+        test_divisor: u32,
+        monkey_if_test_is_true: u32,
+        monkey_if_test_is_false: u32,
+        amount_of_items_inspected: u32,
+    ) -> Monkey {
         Monkey {
-            items: Vec::new(),
-            operation: Operation::Add(0),
-            test_divisor: 1,
-            monkey_if_test_is_true: 0,
-            monkey_if_test_is_false: 0,
-            amount_of_items_inspected: 0,
+            items,
+            operation,
+            test_divisor,
+            monkey_if_test_is_true,
+            monkey_if_test_is_false,
+            amount_of_items_inspected,
         }
     }
 
