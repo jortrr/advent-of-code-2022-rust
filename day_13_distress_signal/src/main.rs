@@ -6,6 +6,8 @@ use std::{
 
 use structs::{packet::Packet, packet_pair::PacketPair, signal::Signal};
 
+use crate::structs::packet::PacketData;
+
 mod structs;
 
 // File paths
@@ -17,7 +19,7 @@ static ANSWER_PART_TWO_PATH: &str = "src/puzzle/ANSWER_PART_TWO";
 //Program main
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
-    //let list: &str = "[[[8,4,3],[[3,10,0,8],[1,6,9,8],7],9,[0,[]],[3,3,[0,6],[3,7,0]]],[9,8,[[],[1,9],10],10],[8,7,[[2,9,1,1],[4,3,10],[6,6],3,7],[4,9,[4,7,6,3,0],6,[3]],4],[[[9,1,5,9,5],7,[8]],[],0],[[]]]";
+    //let list: &str = "[[4,[2],4],4,4]";
     //let packet_data = PacketData::parse_list(list).unwrap();
     //println!("packet_data: {:?}", packet_data);
 

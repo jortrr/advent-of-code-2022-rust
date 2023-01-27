@@ -12,10 +12,26 @@ impl PacketData {
         PacketData::parse_list_print_recursion_level(list_on_packet_line, 0)
     }
 
-    //Print the current recursion level (4 spaces per recursion level) on the current terminal line.
+    ///Print the current recursion level (4 spaces per recursion level) on the current terminal line.
     fn print_recursion_level(recursion_level: usize) {
         for _ in 0..recursion_level {
             print!("    ");
+        }
+    }
+
+    ///Apend the integer_string as a PacketData::Integer to the PacketData if self == PacketData::List, or append nothing if value_string is empty
+    fn append_value(&mut self, value_string: &mut String) {
+        if !value_string.is_empty() {
+            if let PacketData::List(ref mut l) = self {
+                let integer: u8 = value_string.parse().expect(&format!(
+                    "The string ({}) cannot be converted to a u8.",
+                    value_string
+                ));
+                let integer: PacketData = PacketData::Integer(integer);
+                //Add the Integer to our main list
+                l.push(integer);
+                *value_string = String::new();
+            }
         }
     }
 
@@ -32,27 +48,28 @@ impl PacketData {
         if list_on_packet_line.chars().nth_back(0).unwrap() != ']' {
             return Err(format!("The PacketData::List string ({}) is invalid, because the last character is not a ']'.", list_on_packet_line));
         }
+
         let mut parsed_integer: String = String::new();
-        let mut amount_of_sub_lists_encountered: u16 = 1;
-        let mut found_a_list: bool = false;
+        let mut list_level: u16 = 0; //The current list level, gets incremented when '[' is encountered, decremented when ']' is encountered
         let mut found_list_begin_index = 0;
         let mut list = PacketData::List(Vec::new()); //Our return value
-        for (i, c) in list_on_packet_line[1..].chars().enumerate() {
-            PacketData::print_recursion_level(recursion_level);
-            PacketData::print_recursion_level(1);
+
+        for (i, c) in list_on_packet_line.chars().enumerate() {
+            PacketData::print_recursion_level(recursion_level + 1);
             println!("(i: {}, c: {})", i, c);
             if c == '[' {
-                amount_of_sub_lists_encountered += 1;
-                //println!("++");
+                list_level += 1;
             } else if c == ']' {
-                amount_of_sub_lists_encountered -= 1;
-                //println!("--");
+                list_level -= 1;
             }
-            if found_a_list {
+
+            if list_level == 0 && c == ']' {
+                list.append_value(&mut parsed_integer);
+                return Ok(list);
+            } else if list_level == 1 {
                 //We're looking for a ']' to recursively call parse_list() on the substring containing the sub-list
-                if c == ']' && amount_of_sub_lists_encountered == 1 {
-                    let found_list_last_index = i + 1;
-                    found_a_list = false;
+                if c == ']' {
+                    let found_list_last_index = i;
                     let sub_list = PacketData::parse_list_print_recursion_level(
                         &list_on_packet_line[found_list_begin_index..found_list_last_index + 1],
                         recursion_level + 1,
@@ -61,33 +78,19 @@ impl PacketData {
                     if let PacketData::List(ref mut l) = list {
                         l.push(sub_list);
                     }
-                }
-            } else {
-                //We're looking for Integers, separated by either a comma, or ended by a ']'
-                if c == '[' {
-                    found_a_list = true;
-                    found_list_begin_index = i + 1;
                 } else if c == ',' || c == ']' {
-                    if !parsed_integer.is_empty() {
-                        let integer: u8 = parsed_integer.parse().expect(&format!(
-                            "The string ({}) cannot be converted to a u8.",
-                            parsed_integer
-                        ));
-                        let integer: PacketData = PacketData::Integer(integer);
-                        //Add the Integer to our main list
-                        if let PacketData::List(ref mut l) = list {
-                            l.push(integer);
-                        }
-                        parsed_integer = String::new();
-                    }
-                    if c == ']' && amount_of_sub_lists_encountered == 0 {
+                    list.append_value(&mut parsed_integer);
+                    if c == ']' && list_level == 0 {
                         return Ok(list);
                     }
-                } else {
+                } else if c != '[' {
                     parsed_integer.push(c);
                 }
+            } else if list_level == 2 && c == '[' {
+                found_list_begin_index = i;
             }
         }
+
         Err(format!(
             "No PacketData::List was found in the string ({})",
             list_on_packet_line
