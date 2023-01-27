@@ -1,4 +1,6 @@
-#[derive(PartialEq, Debug)]
+use std::fmt;
+
+#[derive(PartialEq)]
 pub enum PacketData {
     List(Vec<PacketData>),
     Integer(u8),
@@ -93,21 +95,33 @@ impl PacketData {
     }
 }
 
+impl fmt::Debug for PacketData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PacketData::List(ref l) => {
+                let mut debug_string: String = String::new();
+                for (i, packet_data) in l.iter().enumerate() {
+                    debug_string = format!("{}{:?}", debug_string, packet_data);
+                    if i < l.len() - 1 {
+                        debug_string.push(',');
+                    }
+                }
+                write!(f, "[{}]", debug_string)
+            }
+            PacketData::Integer(i) => write!(f, "{}", i),
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct Packet {
     packet_data: PacketData,
 }
 
 impl Packet {
     pub fn from(packet_line: &str) -> Packet {
-        let mut packet_data: PacketData = PacketData::List(Vec::new());
-        for c in packet_line.chars() {
-            if c == '[' {
-                packet_data = PacketData::List(Vec::new());
-            } else if c == ']' {
-            }
-        }
         Packet {
-            packet_data: PacketData::List(Vec::new()),
-        } //TODO
+            packet_data: PacketData::parse_list(packet_line).unwrap(),
+        }
     }
 }

@@ -1,5 +1,6 @@
 use super::packet::Packet;
 
+#[derive(Debug)]
 pub struct PacketPair {
     left: Packet,
     right: Packet,

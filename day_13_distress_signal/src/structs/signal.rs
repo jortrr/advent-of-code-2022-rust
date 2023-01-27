@@ -19,4 +19,20 @@ impl Signal {
     pub fn compare_order_of_packet_pairs(&mut self) {
         //TODO
     }
+
+    ///Print all the PacketPairs in self.packet_pairs to the terminal
+    pub fn print(&self) {
+        println!("=== Signal ===");
+        for (i, packet_pair) in self.packet_pairs.iter().enumerate() {
+            println!("== Pair {} ==", i + 1);
+            println!("{:?}", packet_pair);
+            println!();
+        }
+    }
+
+    pub fn new() -> Signal {
+        Signal {
+            packet_pairs: Vec::new(),
+        }
+    }
 }
