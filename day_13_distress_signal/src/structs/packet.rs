@@ -31,6 +31,7 @@ impl PacketData {
             return Err(format!("The PacketData::List string ({}) is invalid, because the last character is not a ']'.", list_on_packet_line));
         }
         let mut parsed_integer: String = String::new();
+        let mut amount_of_sub_lists_encountered: u16 = 1;
         let mut found_a_list: bool = false;
         let mut found_list_begin_index = 0;
         let mut list = PacketData::List(Vec::new()); //Our return value
@@ -39,12 +40,15 @@ impl PacketData {
             PacketData::print_recursion_level(1);
             println!("(i: {}, c: {})", i, c);
             if c == '[' {
-                found_a_list = true;
-                found_list_begin_index = i + 1;
+                amount_of_sub_lists_encountered += 1;
+                //println!("++");
+            } else if c == ']' {
+                amount_of_sub_lists_encountered -= 1;
+                //println!("--");
             }
             if found_a_list {
                 //We're looking for a ']' to recursively call parse_list() on the substring containing the sub-list
-                if c == ']' {
+                if c == ']' && amount_of_sub_lists_encountered == 1 {
                     let found_list_last_index = i + 1;
                     found_a_list = false;
                     let sub_list = PacketData::parse_list_print_recursion_level(
@@ -58,21 +62,23 @@ impl PacketData {
                 }
             } else {
                 //We're looking for Integers, separated by either a comma, or ended by a ']'
-                if c == ',' || c == ']' {
-                    if parsed_integer.is_empty() {
-                        continue;
+                if c == '[' {
+                    found_a_list = true;
+                    found_list_begin_index = i + 1;
+                } else if c == ',' || c == ']' {
+                    if !parsed_integer.is_empty() {
+                        let integer: u8 = parsed_integer.parse().expect(&format!(
+                            "The string ({}) cannot be converted to a u8.",
+                            parsed_integer
+                        ));
+                        let integer: PacketData = PacketData::Integer(integer);
+                        //Add the Integer to our main list
+                        if let PacketData::List(ref mut l) = list {
+                            l.push(integer);
+                        }
+                        parsed_integer = String::new();
                     }
-                    let integer: u8 = parsed_integer.parse().expect(&format!(
-                        "The string ({}) cannot be converted to a u8.",
-                        parsed_integer
-                    ));
-                    let integer: PacketData = PacketData::Integer(integer);
-                    //Add the Integer to our main list
-                    if let PacketData::List(ref mut l) = list {
-                        l.push(integer);
-                    }
-                    parsed_integer = String::new();
-                    if c == ']' {
+                    if c == ']' && amount_of_sub_lists_encountered == 0 {
                         return Ok(list);
                     }
                 } else {
