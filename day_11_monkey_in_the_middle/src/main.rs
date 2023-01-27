@@ -1,15 +1,11 @@
-use structs::monkey_builder::{self, MonkeyBuilder};
-
-use crate::structs::{
-    item::Item,
-    monkey::{Monkey, Operation},
-    monkey_in_the_middle::MonkeyInTheMiddle,
-};
+//! Advent of Code day 11
+use crate::structs::{item::Item, monkey::Operation, monkey_in_the_middle::MonkeyInTheMiddle};
 use core::panic;
 use std::{
     env, fs,
     io::{self, BufRead},
 };
+use structs::monkey_builder::MonkeyBuilder;
 
 mod structs;
 
