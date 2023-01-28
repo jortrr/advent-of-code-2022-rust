@@ -19,7 +19,7 @@ fn main() {
     env::set_var("RUST_BACKTRACE", "1");
 
     //Create our main Advent of Code puzzle data structure from the INPUT file
-    let mut signal: Signal = parse(EXAMPLE_INPUT_PATH).unwrap();
+    let mut signal: Signal = parse(INPUT_PATH).unwrap();
 
     //Print the data structure that was created by parse()
     signal.print();
@@ -62,13 +62,15 @@ fn solve_part_one(signal: &mut Signal) -> usize {
     println!("=== solve_part_one(signal) ===");
     signal.compare_order_of_packet_pairs();
     signal.print();
-    let sum: usize = signal.sum_of_ordered_pair_indices();
+    let sum: usize = signal.compute_sum_of_ordered_pair_indices();
     println!("Sum of the indices of ordered pairs: {}", sum);
     sum
 }
 
 ///Solve part two of the Advent of Code 2022 puzzle, returns the puzzle answer
-fn solve_part_two(sigal: &mut Signal) -> u16 {
+fn solve_part_two(signal: &mut Signal) -> usize {
     println!("=== solve_part_two(signal) ===");
-    0
+    let decoder_key: usize = signal.compute_decoder_key();
+    println!("Decoder key: {}", decoder_key);
+    decoder_key
 }

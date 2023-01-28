@@ -12,9 +12,12 @@ impl Packet {
         }
     }
 
-    pub fn compare(left: &Packet, right: &Packet) -> bool {
-        let comparison: PacketDataComparison =
-            PacketData::compare_print_recursion_level(&left.packet_data, &right.packet_data, 0);
+    pub fn compare(left: &Packet, right: &Packet, recursion_level: usize) -> bool {
+        let comparison: PacketDataComparison = PacketData::compare_print_recursion_level(
+            &left.packet_data,
+            &right.packet_data,
+            recursion_level,
+        );
         match comparison {
             PacketDataComparison::Ordered => true,
             PacketDataComparison::Unordered => false,
@@ -38,7 +41,7 @@ impl Packet {
         }
     }
 
-    ///https://www.geeksforgeeks.org/merge-sort/
+    ///Sort the Packet slice recursively using the Merge Sort Algorithm, until packets is in the right order. See: https://www.geeksforgeeks.org/merge-sort/
     pub fn merge_sort(packets: &mut [Packet], recursion_level: usize) {
         Packet::print_recursion_level(recursion_level);
         print!("- merge_sort(");
@@ -49,7 +52,7 @@ impl Packet {
             //Already sorted
         } else if packets.len() == 2 {
             //Sort the 2 packets
-            let ordered: bool = Packet::compare(&packets[0], &packets[1]);
+            let ordered: bool = Packet::compare(&packets[0], &packets[1], recursion_level + 1);
             Packet::print_recursion_level(recursion_level + 1);
             if ordered {
                 print!("- ordered: ");
@@ -97,7 +100,7 @@ impl Packet {
                     Some(l) => match right {
                         Some(r) => {
                             //Compare l vs r
-                            let ordered: bool = Packet::compare(l, r);
+                            let ordered: bool = Packet::compare(l, r, recursion_level + 1);
                             if ordered {
                                 *packet = l.clone();
                                 left = left_iter.next();
