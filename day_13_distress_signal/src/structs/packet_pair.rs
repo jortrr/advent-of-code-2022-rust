@@ -17,6 +17,10 @@ impl PacketPair {
     }
     ///Compare the order of the left and right Packets, store whether the PacketPair is ordered in self.ordered
     pub fn compare_packets(&mut self) {
-        //TODO
+        self.ordered = Packet::compare(&self.left, &self.right);
+    }
+
+    pub fn ordered(&self) -> bool {
+        self.ordered
     }
 }
