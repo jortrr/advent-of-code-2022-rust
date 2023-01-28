@@ -28,4 +28,44 @@ parse_list([[4,[2],4],4,4])
     (i: 12, c: ,)
     (i: 13, c: 4)
     (i: 14, c: ])
-packet_data: [[4,[2],4],4,4]
+parse_list([[4,[2],4],4,4])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 4)
+    (i: 3, c: ,)
+    (i: 4, c: [)
+    (i: 5, c: 2)
+    (i: 6, c: ])
+    (i: 7, c: ,)
+    (i: 8, c: 4)
+    (i: 9, c: ])
+    parse_list([4,[2],4])
+        (i: 0, c: [)
+        (i: 1, c: 4)
+        (i: 2, c: ,)
+        (i: 3, c: [)
+        (i: 4, c: 2)
+        (i: 5, c: ])
+        parse_list([2])
+            (i: 0, c: [)
+            (i: 1, c: 2)
+            (i: 2, c: ])
+        (i: 6, c: ,)
+        (i: 7, c: 4)
+        (i: 8, c: ])
+    (i: 10, c: ,)
+    (i: 11, c: 4)
+    (i: 12, c: ,)
+    (i: 13, c: 4)
+    (i: 14, c: ])
+l_packet_data: [[4,[2],4],4,4]
+r_packet_data: [[4,[2],4],4,4]
+- Compare [[4,[2],4],4,4] vs [[4,[2],4],4,4]
+    - Compare [4,[2],4] vs [4,[2],4]
+        - Compare 4 vs 4
+        - Compare [2] vs [2]
+            - Compare 2 vs 2
+        - Compare 4 vs 4
+    - Compare 4 vs 4
+    - Compare 4 vs 4
+comparison: Ordered

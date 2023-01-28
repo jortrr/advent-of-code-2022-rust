@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PacketDataComparison {
     Continue,
     Ordered,
@@ -160,7 +160,10 @@ impl PacketData {
                 PacketData::Integer(r) => {
                     //- Mixed types; convert right to [right] and retry comparison
                     PacketData::print_recursion_level(recursion_level);
-                    println!("- Mixed types; convert right to [right] and retry comparison");
+                    println!(
+                        "- Mixed types; convert {} to [{}] and retry comparison",
+                        r, r
+                    );
                     return PacketData::compare_print_recursion_level(
                         left,
                         &PacketData::List(vec![right.clone()]),
@@ -173,7 +176,10 @@ impl PacketData {
                 PacketData::List(r) => {
                     //- Mixed types; convert left to [left] and retry comparison
                     PacketData::print_recursion_level(recursion_level);
-                    println!("- Mixed types; convert left to [left] and retry comparison");
+                    println!(
+                        "- Mixed types; convert {} to [{}] and retry comparison",
+                        l, l
+                    );
                     return PacketData::compare_print_recursion_level(
                         &PacketData::List(vec![left.clone()]),
                         right,
@@ -195,8 +201,6 @@ impl PacketData {
                 }
             },
         }
-
-        PacketDataComparison::Ordered
     }
 }
 
@@ -215,6 +219,71 @@ impl fmt::Debug for PacketData {
             }
             PacketData::Integer(i) => write!(f, "{}", i),
         }
+    }
+}
+
+///https://doc.rust-lang.org/book/ch11-01-writing-tests.html
+#[cfg(test)]
+mod tests {
+    use crate::structs::packet::PacketDataComparison;
+
+    use super::PacketData;
+
+    fn test_left_and_right_list_strings(
+        l_list: &str,
+        r_list: &str,
+        expected: PacketDataComparison,
+    ) {
+        let l_packet_data = PacketData::parse_list(l_list).unwrap();
+        let r_packet_data = PacketData::parse_list(r_list).unwrap();
+        let comparison =
+            PacketData::compare_print_recursion_level(&l_packet_data, &r_packet_data, 0);
+        assert_eq!(expected, comparison);
+    }
+
+    #[test]
+    fn test_compare_print_recursion_level_1() {
+        test_left_and_right_list_strings(
+            "[1,1,3,1,1]",
+            "[1,1,5,1,1]",
+            PacketDataComparison::Ordered,
+        );
+    }
+    #[test]
+    fn test_compare_print_recursion_level_2() {
+        test_left_and_right_list_strings("[[1],[2,3,4]]", "[[1],4]", PacketDataComparison::Ordered);
+    }
+    #[test]
+    fn test_compare_print_recursion_level_3() {
+        test_left_and_right_list_strings("[9]", "[[8,7,6]]", PacketDataComparison::Unordered);
+    }
+    #[test]
+    fn test_compare_print_recursion_level_4() {
+        test_left_and_right_list_strings(
+            "[[4,4],4,4]",
+            "[[4,4],4,4,4]",
+            PacketDataComparison::Ordered,
+        );
+    }
+    #[test]
+    fn test_compare_print_recursion_level_5() {
+        test_left_and_right_list_strings("[7,7,7,7]", "[7,7,7]", PacketDataComparison::Unordered);
+    }
+    #[test]
+    fn test_compare_print_recursion_level_6() {
+        test_left_and_right_list_strings("[]", "[3]", PacketDataComparison::Ordered);
+    }
+    #[test]
+    fn test_compare_print_recursion_level_7() {
+        test_left_and_right_list_strings("[[[]]]", "[[]]", PacketDataComparison::Unordered);
+    }
+    #[test]
+    fn test_compare_print_recursion_level_8() {
+        test_left_and_right_list_strings(
+            "[1,[2,[3,[4,[5,6,7]]]],8,9]",
+            "[1,[2,[3,[4,[5,6,0]]]],8,9]",
+            PacketDataComparison::Unordered,
+        );
     }
 }
 
