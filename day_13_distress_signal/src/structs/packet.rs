@@ -70,29 +70,62 @@ impl Packet {
             Packet::merge_sort(&mut packets[..middle], recursion_level + 1);
             Packet::merge_sort(&mut packets[middle..], recursion_level + 1);
             //Sort the 2 packet slices
-            let ordered: bool = Packet::compare(&packets[0], &packets[middle]);
             Packet::print_recursion_level(recursion_level + 1);
-            if ordered {
-                print!("- ordered: ");
-                Packet::print_packets(packets);
-                println!();
-                //Already sorted
-            } else {
-                print!("- unordered: ");
-                Packet::print_packets(packets);
-                println!();
-                let mut packet_copies: Vec<Packet> = Vec::new();
-                for packet in packets[middle..].iter() {
-                    packet_copies.push(packet.clone());
-                }
-                for packet in packets[..middle].iter() {
-                    packet_copies.push(packet.clone());
-                }
-                for (i, packet) in packet_copies.iter().enumerate() {
-                    packets[i] = packet.clone();
-                }
-                //Sorted
+            print!("- before merge: ");
+            Packet::print_packets(packets);
+            println!();
+            let mut left_packet_slice_copies: Vec<Packet> = Vec::new();
+            for packet in packets[..middle].iter() {
+                left_packet_slice_copies.push(packet.clone());
             }
+            let mut right_packet_slice_copies: Vec<Packet> = Vec::new();
+            for packet in packets[middle..].iter() {
+                right_packet_slice_copies.push(packet.clone());
+            }
+            let mut left_iter = left_packet_slice_copies.iter();
+            let mut right_iter = right_packet_slice_copies.iter();
+            let mut packets_iter = packets.iter_mut();
+            let mut left = left_iter.next();
+            let mut right = right_iter.next();
+            loop {
+                let packet: Option<&mut Packet> = packets_iter.next();
+                if packet.is_none() {
+                    break;
+                }
+                let packet: &mut Packet = packet.unwrap();
+                match left {
+                    Some(l) => match right {
+                        Some(r) => {
+                            //Compare l vs r
+                            let ordered: bool = Packet::compare(l, r);
+                            if ordered {
+                                *packet = l.clone();
+                                left = left_iter.next();
+                            } else {
+                                *packet = r.clone();
+                                right = right_iter.next();
+                            }
+                        }
+                        None => {
+                            //Append l to packets
+                            *packet = l.clone();
+                            left = left_iter.next();
+                        }
+                    },
+                    None => match right {
+                        Some(r) => {
+                            //Append r to packets
+                            *packet = r.clone();
+                            right = right_iter.next();
+                        }
+                        None => {
+                            //Done
+                            break;
+                        }
+                    },
+                }
+            }
+            //Sorted
         }
         Packet::print_recursion_level(recursion_level + 1);
         print!("- merged: ");
