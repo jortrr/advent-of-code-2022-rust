@@ -59,6 +59,7 @@ fn parse(input_file_path: &str) -> Result<Signal, std::io::Error> {
 
 ///Solve part one of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_one(signal: &mut Signal) -> usize {
+    println!("=== solve_part_one(signal) ===");
     signal.compare_order_of_packet_pairs();
     signal.print();
     let sum: usize = signal.sum_of_ordered_pair_indices();
@@ -68,5 +69,6 @@ fn solve_part_one(signal: &mut Signal) -> usize {
 
 ///Solve part two of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_two(sigal: &mut Signal) -> u16 {
+    println!("=== solve_part_two(signal) ===");
     0
 }

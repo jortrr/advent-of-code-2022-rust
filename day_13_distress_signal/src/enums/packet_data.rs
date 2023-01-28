@@ -1,5 +1,23 @@
 use std::fmt;
 
+//https://stackoverflow.com/questions/63302814/is-there-a-way-to-disable-enable-the-println-macro
+const DEBUG: bool = false;
+macro_rules! println  {
+    ($($rest:tt)*) => {
+        if DEBUG {
+            std::println!($($rest)*)
+        }
+    }
+}
+
+macro_rules! print {
+    ($($rest:tt)*) => {
+        if DEBUG {
+        std::print!($($rest)*)
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum PacketDataComparison {
     Continue,
