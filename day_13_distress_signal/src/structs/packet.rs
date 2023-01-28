@@ -1,6 +1,13 @@
 use std::fmt;
 
-#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum PacketDataComparison {
+    Continue,
+    Ordered,
+    Unordered,
+}
+
+#[derive(PartialEq, Clone)]
 pub enum PacketData {
     List(Vec<PacketData>),
     Integer(u8),
@@ -95,6 +102,101 @@ impl PacketData {
             "No PacketData::List was found in the string ({})",
             list_on_packet_line
         ))
+    }
+
+    ///Compares the left PacketData to the right PacketData recursily, returns whether the PacketData's are in the right order
+    pub fn compare_print_recursion_level(
+        left: &PacketData,
+        right: &PacketData,
+        recursion_level: usize,
+    ) -> PacketDataComparison {
+        match left {
+            PacketData::List(l) => match right {
+                PacketData::List(r) => {
+                    //- Compare [l] vs [r]
+                    PacketData::print_recursion_level(recursion_level);
+                    println!("- Compare {:?} vs {:?}", left, right);
+                    let mut l_iter = l.iter();
+                    let mut r_iter = r.iter();
+                    loop {
+                        let l = l_iter.next();
+                        let r = r_iter.next();
+                        match l {
+                            Some(left_data) => match r {
+                                Some(right_data) => {
+                                    //- Compare left_data vs right_data
+                                    let comparison = PacketData::compare_print_recursion_level(
+                                        left_data,
+                                        right_data,
+                                        recursion_level + 1,
+                                    );
+                                    match comparison {
+                                        PacketDataComparison::Continue => continue,
+                                        _ => return comparison,
+                                    }
+                                }
+                                None => {
+                                    //If the right list runs out of items first, the inputs are not in the right order.
+                                    return PacketDataComparison::Unordered;
+                                }
+                            },
+                            None => match r {
+                                Some(_) => {
+                                    //If the left list runs out of items first, the inputs are in the right order.
+                                    return PacketDataComparison::Ordered;
+                                }
+                                None => {
+                                    //If the lists are the same length and no comparison makes a decision about the order, continue checking the next part of the input.
+                                    match recursion_level {
+                                        0 => return PacketDataComparison::Ordered,
+                                        _ => return PacketDataComparison::Continue,
+                                    }
+                                }
+                            },
+                        }
+                    }
+                }
+
+                PacketData::Integer(r) => {
+                    //- Mixed types; convert right to [right] and retry comparison
+                    PacketData::print_recursion_level(recursion_level);
+                    println!("- Mixed types; convert right to [right] and retry comparison");
+                    return PacketData::compare_print_recursion_level(
+                        left,
+                        &PacketData::List(vec![right.clone()]),
+                        recursion_level + 1,
+                    );
+                }
+            },
+
+            PacketData::Integer(l) => match right {
+                PacketData::List(r) => {
+                    //- Mixed types; convert left to [left] and retry comparison
+                    PacketData::print_recursion_level(recursion_level);
+                    println!("- Mixed types; convert left to [left] and retry comparison");
+                    return PacketData::compare_print_recursion_level(
+                        &PacketData::List(vec![left.clone()]),
+                        right,
+                        recursion_level + 1,
+                    );
+                }
+
+                PacketData::Integer(r) => {
+                    //- Compare l vs r
+                    PacketData::print_recursion_level(recursion_level);
+                    println!("- Compare {} vs {}", l, r);
+                    if l < r {
+                        return PacketDataComparison::Ordered;
+                    }
+                    if l > r {
+                        return PacketDataComparison::Unordered;
+                    }
+                    return PacketDataComparison::Continue;
+                }
+            },
+        }
+
+        PacketDataComparison::Ordered
     }
 }
 

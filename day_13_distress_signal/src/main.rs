@@ -19,12 +19,17 @@ static ANSWER_PART_TWO_PATH: &str = "src/puzzle/ANSWER_PART_TWO";
 //Program main
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
-    //let list: &str = "[[4,[2],4],4,4]";
-    //let packet_data = PacketData::parse_list(list).unwrap();
-    //println!("packet_data: {:?}", packet_data);
+    let l_list: &str = "[[4,[2],4],4,4]";
+    let l_packet_data = PacketData::parse_list(l_list).unwrap();
+    let r_list: &str = "[[4,[2],4],4,4]";
+    let r_packet_data = PacketData::parse_list(r_list).unwrap();
+    println!("l_packet_data: {:?}", l_packet_data);
+    println!("r_packet_data: {:?}", r_packet_data);
+    let comparison = PacketData::compare_print_recursion_level(&l_packet_data, &r_packet_data, 0);
+    println!("comparison: {:?}", comparison);
 
     //Create our main Advent of Code puzzle data structure from the INPUT file
-    let mut signal: Signal = parse(EXAMPLE_INPUT_PATH).unwrap();
+    //let mut signal: Signal = parse(EXAMPLE_INPUT_PATH).unwrap();
     /*if !height_map.is_valid() {
         panic!(
             "The HeightMap parsed from {} is in an invalid state, this should never happen.",
@@ -33,7 +38,7 @@ fn main() {
     }*/
 
     //Print the data structure that was created by parse()
-    signal.print();
+    /*  signal.print();
 
     //Solve part one of the Advent of Code puzzle
     let answer_part_one = solve_part_one(&mut signal);
@@ -41,11 +46,8 @@ fn main() {
 
     //Solve part two of the Advent of Code puzzle
     let answer_part_two = solve_part_two(&mut signal);
-    fs::write(ANSWER_PART_TWO_PATH, format!("{}", answer_part_two)).unwrap();
+    fs::write(ANSWER_PART_TWO_PATH, format!("{}", answer_part_two)).unwrap();*/
 }
-
-//Replace this struct
-struct MainStruct {}
 
 ///Parse the INPUT file at the relative input_file_path into our main data structure, HeightMap
 fn parse(input_file_path: &str) -> Result<Signal, std::io::Error> {
