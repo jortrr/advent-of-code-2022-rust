@@ -47,8 +47,8 @@ fn parse(input_file_path: &str) -> Result<Signal, std::io::Error> {
         }
         packet_lines.push(line);
         if packet_lines.len() == 2 {
-            let left_packet: Packet = Packet::from(&packet_lines.get(0).unwrap());
-            let right_packet: Packet = Packet::from(&packet_lines.get(1).unwrap());
+            let left_packet: Packet = Packet::from(packet_lines.get(0).unwrap());
+            let right_packet: Packet = Packet::from(packet_lines.get(1).unwrap());
             signal.add_packet_pair(PacketPair::new(left_packet, right_packet));
             packet_lines.clear();
         }

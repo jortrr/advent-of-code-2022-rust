@@ -65,7 +65,7 @@ impl Packet {
                 println!();
                 let first_packet_copy: Packet = packets[0].clone();
                 packets[0] = packets[1].clone();
-                packets[1] = first_packet_copy.clone();
+                packets[1] = first_packet_copy;
                 //Sorted
             }
         } else {
@@ -96,36 +96,32 @@ impl Packet {
                     break;
                 }
                 let packet: &mut Packet = packet.unwrap();
-                match left {
-                    Some(l) => match right {
-                        Some(r) => {
-                            //Compare l vs r
-                            let ordered: bool = Packet::compare(l, r, recursion_level + 1);
-                            if ordered {
-                                *packet = l.clone();
-                                left = left_iter.next();
-                            } else {
-                                *packet = r.clone();
-                                right = right_iter.next();
-                            }
-                        }
-                        None => {
-                            //Append l to packets
+                match (left, right) {
+                    (Some(l), Some(r)) => {
+                        //Compare l vs r
+                        let ordered: bool = Packet::compare(l, r, recursion_level + 1);
+                        if ordered {
                             *packet = l.clone();
                             left = left_iter.next();
-                        }
-                    },
-                    None => match right {
-                        Some(r) => {
-                            //Append r to packets
+                        } else {
                             *packet = r.clone();
                             right = right_iter.next();
                         }
-                        None => {
-                            //Done
-                            break;
-                        }
-                    },
+                    }
+                    (Some(l), None) => {
+                        //Append l to packets
+                        *packet = l.clone();
+                        left = left_iter.next();
+                    }
+                    (None, Some(r)) => {
+                        //Append r to packets
+                        *packet = r.clone();
+                        right = right_iter.next();
+                    }
+                    (None, None) => {
+                        //Done
+                        break;
+                    }
                 }
             }
             //Sorted

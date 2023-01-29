@@ -18,7 +18,7 @@ macro_rules! print {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum PacketDataComparison {
     Continue,
     Ordered,
@@ -48,10 +48,9 @@ impl PacketData {
     fn append_value(&mut self, value_string: &mut String) {
         if !value_string.is_empty() {
             if let PacketData::List(ref mut l) = self {
-                let integer: u8 = value_string.parse().expect(&format!(
-                    "The string ({}) cannot be converted to a u8.",
-                    value_string
-                ));
+                let integer: u8 = value_string.parse().unwrap_or_else(|_| {
+                    panic!("The string ({}) cannot be converted to a u8.", value_string)
+                });
                 let integer: PacketData = PacketData::Integer(integer);
                 //Add the Integer to our main list
                 l.push(integer);
@@ -128,112 +127,99 @@ impl PacketData {
         right: &PacketData,
         recursion_level: usize,
     ) -> PacketDataComparison {
-        match left {
-            PacketData::List(l) => {
-                match right {
-                    PacketData::List(r) => {
-                        //- Compare [l] vs [r]
-                        PacketData::print_recursion_level(recursion_level);
-                        println!("- Compare {:?} vs {:?}", left, right);
-                        let mut l_iter = l.iter();
-                        let mut r_iter = r.iter();
-                        loop {
-                            let l = l_iter.next();
-                            let r = r_iter.next();
-                            match l {
-                                Some(left_data) => match r {
-                                    Some(right_data) => {
-                                        //- Compare left_data vs right_data
-                                        let comparison = PacketData::compare_print_recursion_level(
-                                            left_data,
-                                            right_data,
-                                            recursion_level + 1,
-                                        );
-                                        match comparison {
-                                            PacketDataComparison::Continue => continue,
-                                            _ => return comparison,
-                                        }
-                                    }
-                                    None => {
-                                        //If the right list runs out of items first, the inputs are not in the right order.
-                                        PacketData::print_recursion_level(recursion_level + 1);
-                                        println!("- Right side ran out of items, so inputs are not in the right order");
-                                        return PacketDataComparison::Unordered;
-                                    }
-                                },
-                                None => match r {
-                                    Some(_) => {
-                                        //If the left list runs out of items first, the inputs are in the right order.
-                                        PacketData::print_recursion_level(recursion_level + 1);
-                                        println!("- Left side ran out of items, so inputs are in the right order");
-                                        return PacketDataComparison::Ordered;
-                                    }
-                                    None => {
-                                        //If the lists are the same length and no comparison makes a decision about the order, continue checking the next part of the input.
-                                        match recursion_level {
-                                            0 => {
-                                                PacketData::print_recursion_level(
-                                                    recursion_level + 1,
-                                                );
-                                                println!("- Both sides ran out of items, so inputs are in the right order");
-                                                return PacketDataComparison::Ordered;
-                                            }
-                                            _ => return PacketDataComparison::Continue,
-                                        }
-                                    }
-                                },
+        match (left, right) {
+            (PacketData::List(l), PacketData::List(r)) => {
+                //- Compare [l] vs [r]
+                PacketData::print_recursion_level(recursion_level);
+                println!("- Compare {:?} vs {:?}", left, right);
+                let mut l_iter = l.iter();
+                let mut r_iter = r.iter();
+                loop {
+                    let l = l_iter.next();
+                    let r = r_iter.next();
+                    match (l, r) {
+                        (Some(left_data), Some(right_data)) => {
+                            //- Compare left_data vs right_data
+                            let comparison = PacketData::compare_print_recursion_level(
+                                left_data,
+                                right_data,
+                                recursion_level + 1,
+                            );
+                            match comparison {
+                                PacketDataComparison::Continue => continue,
+                                _ => return comparison,
+                            }
+                        }
+                        (Some(_), None) => {
+                            //If the right list runs out of items first, the inputs are not in the right order.
+                            PacketData::print_recursion_level(recursion_level + 1);
+                            println!("- Right side ran out of items, so inputs are not in the right order");
+                            return PacketDataComparison::Unordered;
+                        }
+                        (None, Some(_)) => {
+                            //If the left list runs out of items first, the inputs are in the right order.
+                            PacketData::print_recursion_level(recursion_level + 1);
+                            println!(
+                                "- Left side ran out of items, so inputs are in the right order"
+                            );
+                            return PacketDataComparison::Ordered;
+                        }
+                        (None, None) => {
+                            //If the lists are the same length and no comparison makes a decision about the order, continue checking the next part of the input.
+                            match recursion_level {
+                                0 => {
+                                    PacketData::print_recursion_level(recursion_level + 1);
+                                    println!("- Both sides ran out of items, so inputs are in the right order");
+                                    return PacketDataComparison::Ordered;
+                                }
+                                _ => return PacketDataComparison::Continue,
                             }
                         }
                     }
-
-                    PacketData::Integer(r) => {
-                        //- Mixed types; convert right to [right] and retry comparison
-                        PacketData::print_recursion_level(recursion_level);
-                        println!(
-                            "- Mixed types; convert {} to [{}] and retry comparison",
-                            r, r
-                        );
-                        return PacketData::compare_print_recursion_level(
-                            left,
-                            &PacketData::List(vec![right.clone()]),
-                            recursion_level + 1,
-                        );
-                    }
                 }
             }
-
-            PacketData::Integer(l) => match right {
-                PacketData::List(r) => {
-                    //- Mixed types; convert left to [left] and retry comparison
-                    PacketData::print_recursion_level(recursion_level);
-                    println!(
-                        "- Mixed types; convert {} to [{}] and retry comparison",
-                        l, l
-                    );
-                    return PacketData::compare_print_recursion_level(
-                        &PacketData::List(vec![left.clone()]),
-                        right,
-                        recursion_level + 1,
-                    );
+            (PacketData::List(_), PacketData::Integer(r)) => {
+                //- Mixed types; convert right to [right] and retry comparison
+                PacketData::print_recursion_level(recursion_level);
+                println!(
+                    "- Mixed types; convert {} to [{}] and retry comparison",
+                    r, r
+                );
+                return PacketData::compare_print_recursion_level(
+                    left,
+                    &PacketData::List(vec![right.clone()]),
+                    recursion_level + 1,
+                );
+            }
+            (PacketData::Integer(l), PacketData::List(_)) => {
+                //- Mixed types; convert left to [left] and retry comparison
+                PacketData::print_recursion_level(recursion_level);
+                println!(
+                    "- Mixed types; convert {} to [{}] and retry comparison",
+                    l, l
+                );
+                return PacketData::compare_print_recursion_level(
+                    &PacketData::List(vec![left.clone()]),
+                    right,
+                    recursion_level + 1,
+                );
+            }
+            (PacketData::Integer(l), PacketData::Integer(r)) => {
+                //- Compare l vs r
+                PacketData::print_recursion_level(recursion_level);
+                println!("- Compare {} vs {}", l, r);
+                if l < r {
+                    PacketData::print_recursion_level(recursion_level + 1);
+                    println!("- Left side is smaller, so inputs are in the right order");
+                    return PacketDataComparison::Ordered;
                 }
-
-                PacketData::Integer(r) => {
-                    //- Compare l vs r
-                    PacketData::print_recursion_level(recursion_level);
-                    println!("- Compare {} vs {}", l, r);
-                    if l < r {
-                        PacketData::print_recursion_level(recursion_level + 1);
-                        println!("- Left side is smaller, so inputs are in the right order");
-                        return PacketDataComparison::Ordered;
-                    }
-                    if l > r {
-                        PacketData::print_recursion_level(recursion_level + 1);
-                        println!("- Right side is smaller, so inputs are not in the right order");
-                        return PacketDataComparison::Unordered;
-                    }
-                    return PacketDataComparison::Continue;
+                if l > r {
+                    PacketData::print_recursion_level(recursion_level + 1);
+                    println!("- Right side is smaller, so inputs are not in the right order");
+                    return PacketDataComparison::Unordered;
                 }
-            },
+                return PacketDataComparison::Continue;
+            }
         }
     }
 }
