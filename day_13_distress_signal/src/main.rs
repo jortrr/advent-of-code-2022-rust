@@ -1,3 +1,12 @@
+#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
+#![allow(
+    clippy::use_self,
+    clippy::needless_return,
+    clippy::module_name_repetitions,
+    clippy::missing_const_for_fn,
+    clippy::doc_markdown
+)]
+
 //! Advent of Code 2022 day x
 use std::{
     env, fs,
@@ -10,7 +19,7 @@ mod structs;
 
 // File paths
 static INPUT_PATH: &str = "puzzle/INPUT";
-static EXAMPLE_INPUT_PATH: &str = "puzzle/EXAMPLE_INPUT";
+//static EXAMPLE_INPUT_PATH: &str = "puzzle/EXAMPLE_INPUT";
 static ANSWER_PART_ONE_PATH: &str = "puzzle/ANSWER_PART_ONE";
 static ANSWER_PART_TWO_PATH: &str = "puzzle/ANSWER_PART_TWO";
 
@@ -33,13 +42,13 @@ fn main() {
     fs::write(ANSWER_PART_TWO_PATH, format!("{}", answer_part_two)).unwrap();
 }
 
-///Parse the INPUT file at the relative input_file_path into our main data structure, HeightMap
+///Parse the INPUT file at the relative `input_file_path` into our main data structure, `Signal`
 fn parse(input_file_path: &str) -> Result<Signal, std::io::Error> {
     let input_file: fs::File = fs::File::open(input_file_path)?;
     let reader: io::BufReader<fs::File> = io::BufReader::new(input_file);
     let mut signal: Signal = Signal::new();
     let mut packet_lines: Vec<String> = Vec::new();
-    for (i, line) in reader.lines().enumerate() {
+    for line in reader.lines() {
         //Remove leading trailing new-line characters
         let line: String = line?.trim().to_string();
         if line.is_empty() {

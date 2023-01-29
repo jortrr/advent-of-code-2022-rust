@@ -32,7 +32,7 @@ pub enum PacketData {
 }
 
 impl PacketData {
-    ///Parse a list string literal or slice into a PacketData::List, will return an error if the string cannot be parsed into a PacketData::List.
+    ///Parse a list string literal or slice into a `PacketData::List`, will return an error if the string cannot be parsed into a `PacketData::List`.
     pub fn parse_list(list_on_packet_line: &str) -> Result<PacketData, String> {
         PacketData::parse_list_print_recursion_level(list_on_packet_line, 0)
     }
@@ -44,7 +44,7 @@ impl PacketData {
         }
     }
 
-    ///Apend the integer_string as a PacketData::Integer to the PacketData if self == PacketData::List, or append nothing if value_string is empty
+    ///Apend the `integer_string` as a `PacketData::Integer` to the `PacketData` if self == `PacketData::List`, or append nothing if `value_string` is empty
     fn append_value(&mut self, value_string: &mut String) {
         if !value_string.is_empty() {
             if let PacketData::List(ref mut l) = self {
@@ -59,17 +59,17 @@ impl PacketData {
         }
     }
 
-    ///Parse a list string literal or slice into a PacketData::List, will return an error if the string cannot be parsed into a PacketData::List. Will also print at the current recursion level to the terminal.
+    ///Parse a list string literal or slice into a `PacketData::List`, will return an error if the string cannot be parsed into a `PacketData::List`. Will also print at the current recursion level to the terminal.
     fn parse_list_print_recursion_level(
         list_on_packet_line: &str,
         recursion_level: usize,
     ) -> Result<PacketData, String> {
         PacketData::print_recursion_level(recursion_level);
         println!("parse_list({})", list_on_packet_line);
-        if list_on_packet_line.chars().nth(0).unwrap() != '[' {
+        if !list_on_packet_line.starts_with('[') {
             return Err(format!("The PacketData::List string ({}) is invalid, because the first character is not a '['.", list_on_packet_line));
         }
-        if list_on_packet_line.chars().nth_back(0).unwrap() != ']' {
+        if !list_on_packet_line.ends_with(']') {
             return Err(format!("The PacketData::List string ({}) is invalid, because the last character is not a ']'.", list_on_packet_line));
         }
 
@@ -95,7 +95,7 @@ impl PacketData {
                 if c == ']' {
                     let found_list_last_index = i;
                     let sub_list = PacketData::parse_list_print_recursion_level(
-                        &list_on_packet_line[found_list_begin_index..found_list_last_index + 1],
+                        &list_on_packet_line[found_list_begin_index..=found_list_last_index],
                         recursion_level + 1,
                     )?;
                     //Add the sub-list to our main list
@@ -121,7 +121,7 @@ impl PacketData {
         ))
     }
 
-    ///Compares the left PacketData to the right PacketData recursily, returns whether the PacketData's are in the right order
+    ///Compares the left `PacketData` to the righ`PacketData` recursily, returns whether the `PacketData`'s are in the right order
     pub fn compare_print_recursion_level(
         left: &PacketData,
         right: &PacketData,
@@ -242,7 +242,7 @@ impl fmt::Debug for PacketData {
     }
 }
 
-///https://doc.rust-lang.org/book/ch11-01-writing-tests.html
+///<https://doc.rust-lang.org/book/ch11-01-writing-tests.html>
 #[cfg(test)]
 mod tests {
     use super::{PacketData, PacketDataComparison};
@@ -250,13 +250,13 @@ mod tests {
     fn test_left_and_right_list_strings(
         l_list: &str,
         r_list: &str,
-        expected: PacketDataComparison,
+        expected: &PacketDataComparison,
     ) {
         let l_packet_data = PacketData::parse_list(l_list).unwrap();
         let r_packet_data = PacketData::parse_list(r_list).unwrap();
         let comparison =
             PacketData::compare_print_recursion_level(&l_packet_data, &r_packet_data, 0);
-        assert_eq!(expected, comparison);
+        assert_eq!(*expected, comparison);
     }
 
     #[test]
@@ -264,43 +264,47 @@ mod tests {
         test_left_and_right_list_strings(
             "[1,1,3,1,1]",
             "[1,1,5,1,1]",
-            PacketDataComparison::Ordered,
+            &PacketDataComparison::Ordered,
         );
     }
     #[test]
     fn test_compare_print_recursion_level_2() {
-        test_left_and_right_list_strings("[[1],[2,3,4]]", "[[1],4]", PacketDataComparison::Ordered);
+        test_left_and_right_list_strings(
+            "[[1],[2,3,4]]",
+            "[[1],4]",
+            &PacketDataComparison::Ordered,
+        );
     }
     #[test]
     fn test_compare_print_recursion_level_3() {
-        test_left_and_right_list_strings("[9]", "[[8,7,6]]", PacketDataComparison::Unordered);
+        test_left_and_right_list_strings("[9]", "[[8,7,6]]", &PacketDataComparison::Unordered);
     }
     #[test]
     fn test_compare_print_recursion_level_4() {
         test_left_and_right_list_strings(
             "[[4,4],4,4]",
             "[[4,4],4,4,4]",
-            PacketDataComparison::Ordered,
+            &PacketDataComparison::Ordered,
         );
     }
     #[test]
     fn test_compare_print_recursion_level_5() {
-        test_left_and_right_list_strings("[7,7,7,7]", "[7,7,7]", PacketDataComparison::Unordered);
+        test_left_and_right_list_strings("[7,7,7,7]", "[7,7,7]", &PacketDataComparison::Unordered);
     }
     #[test]
     fn test_compare_print_recursion_level_6() {
-        test_left_and_right_list_strings("[]", "[3]", PacketDataComparison::Ordered);
+        test_left_and_right_list_strings("[]", "[3]", &PacketDataComparison::Ordered);
     }
     #[test]
     fn test_compare_print_recursion_level_7() {
-        test_left_and_right_list_strings("[[[]]]", "[[]]", PacketDataComparison::Unordered);
+        test_left_and_right_list_strings("[[[]]]", "[[]]", &PacketDataComparison::Unordered);
     }
     #[test]
     fn test_compare_print_recursion_level_8() {
         test_left_and_right_list_strings(
             "[1,[2,[3,[4,[5,6,7]]]],8,9]",
             "[1,[2,[3,[4,[5,6,0]]]],8,9]",
-            PacketDataComparison::Unordered,
+            &PacketDataComparison::Unordered,
         );
     }
 }

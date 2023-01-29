@@ -17,7 +17,7 @@ impl Signal {
     }
 
     ///Returns the decoder key (the indices of the divider packets [[2]] and [[6]] multiplied together) (the answer to AoC puzzle part two).
-    ///Will copy all Packets in self.packet_pairs and the divider packets into a Vector, and sort the Vector using the Merge Sort Algorithm first.
+    ///Will copy all Packets in `self.packet_pairs` and the divider packets into a Vector, and sort the Vector using the Merge Sort Algorithm first.
     pub fn compute_decoder_key(&self) -> usize {
         //Copy all Packets in self.packet_pairs and the divider packets into a Vector, and sort the Vector using the Merge Sort Algorithm
         let first_divider_packet: Packet = Packet::from("[[2]]");
@@ -44,14 +44,14 @@ impl Signal {
         self.packet_pairs.push(packet_pair);
     }
 
-    ///Identify for all PacketPairs in packet_pairs whether they are currently in the right order
+    ///Identify for all `PacketPairs` in `packet_pairs` whether they are currently in the right order
     pub fn compare_order_of_packet_pairs(&mut self) {
         for packet_pair in &mut self.packet_pairs {
             packet_pair.compare_packets();
         }
     }
 
-    ///Print all the PacketPairs in self.packet_pairs to the terminal
+    ///Print all the `PacketPairs` in `self.packet_pairs` to the terminal
     pub fn print(&self) {
         println!("=== Signal ===");
         for (i, packet_pair) in self.packet_pairs.iter().enumerate() {

@@ -41,7 +41,7 @@ impl Packet {
         }
     }
 
-    ///Sort the Packet slice recursively using the Merge Sort Algorithm, until packets is in the right order. See: https://www.geeksforgeeks.org/merge-sort/
+    ///Sort the Packet slice recursively using the Merge Sort Algorithm, until packets is in the right order. See: <https://www.geeksforgeeks.org/merge-sort/>
     pub fn merge_sort(packets: &mut [Packet], recursion_level: usize) {
         Packet::print_recursion_level(recursion_level);
         print!("- merge_sort(");
@@ -133,7 +133,7 @@ impl Packet {
     }
 }
 
-///https://doc.rust-lang.org/book/ch11-01-writing-tests.html
+///<https://doc.rust-lang.org/book/ch11-01-writing-tests.html>
 #[cfg(test)]
 mod tests {
     use super::Packet;
