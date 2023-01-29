@@ -1,0 +1,771 @@
+parse_list([1,1,3,1,1])
+    (i: 0, c: [)
+    (i: 1, c: 1)
+    (i: 2, c: ,)
+    (i: 3, c: 1)
+    (i: 4, c: ,)
+    (i: 5, c: 3)
+    (i: 6, c: ,)
+    (i: 7, c: 1)
+    (i: 8, c: ,)
+    (i: 9, c: 1)
+    (i: 10, c: ])
+parse_list([1,1,5,1,1])
+    (i: 0, c: [)
+    (i: 1, c: 1)
+    (i: 2, c: ,)
+    (i: 3, c: 1)
+    (i: 4, c: ,)
+    (i: 5, c: 5)
+    (i: 6, c: ,)
+    (i: 7, c: 1)
+    (i: 8, c: ,)
+    (i: 9, c: 1)
+    (i: 10, c: ])
+parse_list([[1],[2,3,4]])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 1)
+    (i: 3, c: ])
+    parse_list([1])
+        (i: 0, c: [)
+        (i: 1, c: 1)
+        (i: 2, c: ])
+    (i: 4, c: ,)
+    (i: 5, c: [)
+    (i: 6, c: 2)
+    (i: 7, c: ,)
+    (i: 8, c: 3)
+    (i: 9, c: ,)
+    (i: 10, c: 4)
+    (i: 11, c: ])
+    parse_list([2,3,4])
+        (i: 0, c: [)
+        (i: 1, c: 2)
+        (i: 2, c: ,)
+        (i: 3, c: 3)
+        (i: 4, c: ,)
+        (i: 5, c: 4)
+        (i: 6, c: ])
+    (i: 12, c: ])
+parse_list([[1],4])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 1)
+    (i: 3, c: ])
+    parse_list([1])
+        (i: 0, c: [)
+        (i: 1, c: 1)
+        (i: 2, c: ])
+    (i: 4, c: ,)
+    (i: 5, c: 4)
+    (i: 6, c: ])
+parse_list([9])
+    (i: 0, c: [)
+    (i: 1, c: 9)
+    (i: 2, c: ])
+parse_list([[8,7,6]])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 8)
+    (i: 3, c: ,)
+    (i: 4, c: 7)
+    (i: 5, c: ,)
+    (i: 6, c: 6)
+    (i: 7, c: ])
+    parse_list([8,7,6])
+        (i: 0, c: [)
+        (i: 1, c: 8)
+        (i: 2, c: ,)
+        (i: 3, c: 7)
+        (i: 4, c: ,)
+        (i: 5, c: 6)
+        (i: 6, c: ])
+    (i: 8, c: ])
+parse_list([[4,4],4,4])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 4)
+    (i: 3, c: ,)
+    (i: 4, c: 4)
+    (i: 5, c: ])
+    parse_list([4,4])
+        (i: 0, c: [)
+        (i: 1, c: 4)
+        (i: 2, c: ,)
+        (i: 3, c: 4)
+        (i: 4, c: ])
+    (i: 6, c: ,)
+    (i: 7, c: 4)
+    (i: 8, c: ,)
+    (i: 9, c: 4)
+    (i: 10, c: ])
+parse_list([[4,4],4,4,4])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 4)
+    (i: 3, c: ,)
+    (i: 4, c: 4)
+    (i: 5, c: ])
+    parse_list([4,4])
+        (i: 0, c: [)
+        (i: 1, c: 4)
+        (i: 2, c: ,)
+        (i: 3, c: 4)
+        (i: 4, c: ])
+    (i: 6, c: ,)
+    (i: 7, c: 4)
+    (i: 8, c: ,)
+    (i: 9, c: 4)
+    (i: 10, c: ,)
+    (i: 11, c: 4)
+    (i: 12, c: ])
+parse_list([7,7,7,7])
+    (i: 0, c: [)
+    (i: 1, c: 7)
+    (i: 2, c: ,)
+    (i: 3, c: 7)
+    (i: 4, c: ,)
+    (i: 5, c: 7)
+    (i: 6, c: ,)
+    (i: 7, c: 7)
+    (i: 8, c: ])
+parse_list([7,7,7])
+    (i: 0, c: [)
+    (i: 1, c: 7)
+    (i: 2, c: ,)
+    (i: 3, c: 7)
+    (i: 4, c: ,)
+    (i: 5, c: 7)
+    (i: 6, c: ])
+parse_list([])
+    (i: 0, c: [)
+    (i: 1, c: ])
+parse_list([3])
+    (i: 0, c: [)
+    (i: 1, c: 3)
+    (i: 2, c: ])
+parse_list([[[]]])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: [)
+    (i: 3, c: ])
+    (i: 4, c: ])
+    parse_list([[]])
+        (i: 0, c: [)
+        (i: 1, c: [)
+        (i: 2, c: ])
+        parse_list([])
+            (i: 0, c: [)
+            (i: 1, c: ])
+        (i: 3, c: ])
+    (i: 5, c: ])
+parse_list([[]])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: ])
+    parse_list([])
+        (i: 0, c: [)
+        (i: 1, c: ])
+    (i: 3, c: ])
+parse_list([1,[2,[3,[4,[5,6,7]]]],8,9])
+    (i: 0, c: [)
+    (i: 1, c: 1)
+    (i: 2, c: ,)
+    (i: 3, c: [)
+    (i: 4, c: 2)
+    (i: 5, c: ,)
+    (i: 6, c: [)
+    (i: 7, c: 3)
+    (i: 8, c: ,)
+    (i: 9, c: [)
+    (i: 10, c: 4)
+    (i: 11, c: ,)
+    (i: 12, c: [)
+    (i: 13, c: 5)
+    (i: 14, c: ,)
+    (i: 15, c: 6)
+    (i: 16, c: ,)
+    (i: 17, c: 7)
+    (i: 18, c: ])
+    (i: 19, c: ])
+    (i: 20, c: ])
+    (i: 21, c: ])
+    parse_list([2,[3,[4,[5,6,7]]]])
+        (i: 0, c: [)
+        (i: 1, c: 2)
+        (i: 2, c: ,)
+        (i: 3, c: [)
+        (i: 4, c: 3)
+        (i: 5, c: ,)
+        (i: 6, c: [)
+        (i: 7, c: 4)
+        (i: 8, c: ,)
+        (i: 9, c: [)
+        (i: 10, c: 5)
+        (i: 11, c: ,)
+        (i: 12, c: 6)
+        (i: 13, c: ,)
+        (i: 14, c: 7)
+        (i: 15, c: ])
+        (i: 16, c: ])
+        (i: 17, c: ])
+        parse_list([3,[4,[5,6,7]]])
+            (i: 0, c: [)
+            (i: 1, c: 3)
+            (i: 2, c: ,)
+            (i: 3, c: [)
+            (i: 4, c: 4)
+            (i: 5, c: ,)
+            (i: 6, c: [)
+            (i: 7, c: 5)
+            (i: 8, c: ,)
+            (i: 9, c: 6)
+            (i: 10, c: ,)
+            (i: 11, c: 7)
+            (i: 12, c: ])
+            (i: 13, c: ])
+            parse_list([4,[5,6,7]])
+                (i: 0, c: [)
+                (i: 1, c: 4)
+                (i: 2, c: ,)
+                (i: 3, c: [)
+                (i: 4, c: 5)
+                (i: 5, c: ,)
+                (i: 6, c: 6)
+                (i: 7, c: ,)
+                (i: 8, c: 7)
+                (i: 9, c: ])
+                parse_list([5,6,7])
+                    (i: 0, c: [)
+                    (i: 1, c: 5)
+                    (i: 2, c: ,)
+                    (i: 3, c: 6)
+                    (i: 4, c: ,)
+                    (i: 5, c: 7)
+                    (i: 6, c: ])
+                (i: 10, c: ])
+            (i: 14, c: ])
+        (i: 18, c: ])
+    (i: 22, c: ,)
+    (i: 23, c: 8)
+    (i: 24, c: ,)
+    (i: 25, c: 9)
+    (i: 26, c: ])
+parse_list([1,[2,[3,[4,[5,6,0]]]],8,9])
+    (i: 0, c: [)
+    (i: 1, c: 1)
+    (i: 2, c: ,)
+    (i: 3, c: [)
+    (i: 4, c: 2)
+    (i: 5, c: ,)
+    (i: 6, c: [)
+    (i: 7, c: 3)
+    (i: 8, c: ,)
+    (i: 9, c: [)
+    (i: 10, c: 4)
+    (i: 11, c: ,)
+    (i: 12, c: [)
+    (i: 13, c: 5)
+    (i: 14, c: ,)
+    (i: 15, c: 6)
+    (i: 16, c: ,)
+    (i: 17, c: 0)
+    (i: 18, c: ])
+    (i: 19, c: ])
+    (i: 20, c: ])
+    (i: 21, c: ])
+    parse_list([2,[3,[4,[5,6,0]]]])
+        (i: 0, c: [)
+        (i: 1, c: 2)
+        (i: 2, c: ,)
+        (i: 3, c: [)
+        (i: 4, c: 3)
+        (i: 5, c: ,)
+        (i: 6, c: [)
+        (i: 7, c: 4)
+        (i: 8, c: ,)
+        (i: 9, c: [)
+        (i: 10, c: 5)
+        (i: 11, c: ,)
+        (i: 12, c: 6)
+        (i: 13, c: ,)
+        (i: 14, c: 0)
+        (i: 15, c: ])
+        (i: 16, c: ])
+        (i: 17, c: ])
+        parse_list([3,[4,[5,6,0]]])
+            (i: 0, c: [)
+            (i: 1, c: 3)
+            (i: 2, c: ,)
+            (i: 3, c: [)
+            (i: 4, c: 4)
+            (i: 5, c: ,)
+            (i: 6, c: [)
+            (i: 7, c: 5)
+            (i: 8, c: ,)
+            (i: 9, c: 6)
+            (i: 10, c: ,)
+            (i: 11, c: 0)
+            (i: 12, c: ])
+            (i: 13, c: ])
+            parse_list([4,[5,6,0]])
+                (i: 0, c: [)
+                (i: 1, c: 4)
+                (i: 2, c: ,)
+                (i: 3, c: [)
+                (i: 4, c: 5)
+                (i: 5, c: ,)
+                (i: 6, c: 6)
+                (i: 7, c: ,)
+                (i: 8, c: 0)
+                (i: 9, c: ])
+                parse_list([5,6,0])
+                    (i: 0, c: [)
+                    (i: 1, c: 5)
+                    (i: 2, c: ,)
+                    (i: 3, c: 6)
+                    (i: 4, c: ,)
+                    (i: 5, c: 0)
+                    (i: 6, c: ])
+                (i: 10, c: ])
+            (i: 14, c: ])
+        (i: 18, c: ])
+    (i: 22, c: ,)
+    (i: 23, c: 8)
+    (i: 24, c: ,)
+    (i: 25, c: 9)
+    (i: 26, c: ])
+=== Signal ===
+== Pair 1 ==
+PacketPair { left: Packet { packet_data: [1,1,3,1,1] }, right: Packet { packet_data: [1,1,5,1,1] }, ordered: false }
+
+== Pair 2 ==
+PacketPair { left: Packet { packet_data: [[1],[2,3,4]] }, right: Packet { packet_data: [[1],4] }, ordered: false }
+
+== Pair 3 ==
+PacketPair { left: Packet { packet_data: [9] }, right: Packet { packet_data: [[8,7,6]] }, ordered: false }
+
+== Pair 4 ==
+PacketPair { left: Packet { packet_data: [[4,4],4,4] }, right: Packet { packet_data: [[4,4],4,4,4] }, ordered: false }
+
+== Pair 5 ==
+PacketPair { left: Packet { packet_data: [7,7,7,7] }, right: Packet { packet_data: [7,7,7] }, ordered: false }
+
+== Pair 6 ==
+PacketPair { left: Packet { packet_data: [] }, right: Packet { packet_data: [3] }, ordered: false }
+
+== Pair 7 ==
+PacketPair { left: Packet { packet_data: [[[]]] }, right: Packet { packet_data: [[]] }, ordered: false }
+
+== Pair 8 ==
+PacketPair { left: Packet { packet_data: [1,[2,[3,[4,[5,6,7]]]],8,9] }, right: Packet { packet_data: [1,[2,[3,[4,[5,6,0]]]],8,9] }, ordered: false }
+
+=== solve_part_one(signal) ===
+- Compare [1,1,3,1,1] vs [1,1,5,1,1]
+    - Compare 1 vs 1
+    - Compare 1 vs 1
+    - Compare 3 vs 5
+        - Left side is smaller, so inputs are in the right order
+- Compare [[1],[2,3,4]] vs [[1],4]
+    - Compare [1] vs [1]
+        - Compare 1 vs 1
+    - Mixed types; convert 4 to [4] and retry comparison
+        - Compare [2,3,4] vs [4]
+            - Compare 2 vs 4
+                - Left side is smaller, so inputs are in the right order
+- Compare [9] vs [[8,7,6]]
+    - Mixed types; convert 9 to [9] and retry comparison
+        - Compare [9] vs [8,7,6]
+            - Compare 9 vs 8
+                - Right side is smaller, so inputs are not in the right order
+- Compare [[4,4],4,4] vs [[4,4],4,4,4]
+    - Compare [4,4] vs [4,4]
+        - Compare 4 vs 4
+        - Compare 4 vs 4
+    - Compare 4 vs 4
+    - Compare 4 vs 4
+    - Left side ran out of items, so inputs are in the right order
+- Compare [7,7,7,7] vs [7,7,7]
+    - Compare 7 vs 7
+    - Compare 7 vs 7
+    - Compare 7 vs 7
+    - Right side ran out of items, so inputs are not in the right order
+- Compare [] vs [3]
+    - Left side ran out of items, so inputs are in the right order
+- Compare [[[]]] vs [[]]
+    - Compare [[]] vs []
+        - Right side ran out of items, so inputs are not in the right order
+- Compare [1,[2,[3,[4,[5,6,7]]]],8,9] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+    - Compare 1 vs 1
+    - Compare [2,[3,[4,[5,6,7]]]] vs [2,[3,[4,[5,6,0]]]]
+        - Compare 2 vs 2
+        - Compare [3,[4,[5,6,7]]] vs [3,[4,[5,6,0]]]
+            - Compare 3 vs 3
+            - Compare [4,[5,6,7]] vs [4,[5,6,0]]
+                - Compare 4 vs 4
+                - Compare [5,6,7] vs [5,6,0]
+                    - Compare 5 vs 5
+                    - Compare 6 vs 6
+                    - Compare 7 vs 0
+                        - Right side is smaller, so inputs are not in the right order
+=== Signal ===
+== Pair 1 ==
+PacketPair { left: Packet { packet_data: [1,1,3,1,1] }, right: Packet { packet_data: [1,1,5,1,1] }, ordered: true }
+
+== Pair 2 ==
+PacketPair { left: Packet { packet_data: [[1],[2,3,4]] }, right: Packet { packet_data: [[1],4] }, ordered: true }
+
+== Pair 3 ==
+PacketPair { left: Packet { packet_data: [9] }, right: Packet { packet_data: [[8,7,6]] }, ordered: false }
+
+== Pair 4 ==
+PacketPair { left: Packet { packet_data: [[4,4],4,4] }, right: Packet { packet_data: [[4,4],4,4,4] }, ordered: true }
+
+== Pair 5 ==
+PacketPair { left: Packet { packet_data: [7,7,7,7] }, right: Packet { packet_data: [7,7,7] }, ordered: false }
+
+== Pair 6 ==
+PacketPair { left: Packet { packet_data: [] }, right: Packet { packet_data: [3] }, ordered: true }
+
+== Pair 7 ==
+PacketPair { left: Packet { packet_data: [[[]]] }, right: Packet { packet_data: [[]] }, ordered: false }
+
+== Pair 8 ==
+PacketPair { left: Packet { packet_data: [1,[2,[3,[4,[5,6,7]]]],8,9] }, right: Packet { packet_data: [1,[2,[3,[4,[5,6,0]]]],8,9] }, ordered: false }
+
+Sum of the indices of ordered pairs: 13
+=== solve_part_two(signal) ===
+parse_list([[2]])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 2)
+    (i: 3, c: ])
+    parse_list([2])
+        (i: 0, c: [)
+        (i: 1, c: 2)
+        (i: 2, c: ])
+    (i: 4, c: ])
+parse_list([[6]])
+    (i: 0, c: [)
+    (i: 1, c: [)
+    (i: 2, c: 6)
+    (i: 3, c: ])
+    parse_list([6])
+        (i: 0, c: [)
+        (i: 1, c: 6)
+        (i: 2, c: ])
+    (i: 4, c: ])
+- merge_sort([[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [9], [[8,7,6]], [[4,4],4,4], [[4,4],4,4,4], [7,7,7,7], [7,7,7], [], [3], [[[]]], [[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+    - merge_sort([[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [9], [[8,7,6]], [[4,4],4,4])
+        - merge_sort([[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1])
+            - merge_sort([[2]], [[6]])
+                - Compare [[2]] vs [[6]]
+                    - Compare [2] vs [6]
+                        - Compare 2 vs 6
+                            - Left side is smaller, so inputs are in the right order
+                - ordered: [[2]], [[6]]
+                - merged: [[2]], [[6]]
+            - merge_sort([1,1,3,1,1], [1,1,5,1,1])
+                - Compare [1,1,3,1,1] vs [1,1,5,1,1]
+                    - Compare 1 vs 1
+                    - Compare 1 vs 1
+                    - Compare 3 vs 5
+                        - Left side is smaller, so inputs are in the right order
+                - ordered: [1,1,3,1,1], [1,1,5,1,1]
+                - merged: [1,1,3,1,1], [1,1,5,1,1]
+            - before merge: [[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1]
+            - Compare [[2]] vs [1,1,3,1,1]
+                - Mixed types; convert 1 to [1] and retry comparison
+                    - Compare [2] vs [1]
+                        - Compare 2 vs 1
+                            - Right side is smaller, so inputs are not in the right order
+            - Compare [[2]] vs [1,1,5,1,1]
+                - Mixed types; convert 1 to [1] and retry comparison
+                    - Compare [2] vs [1]
+                        - Compare 2 vs 1
+                            - Right side is smaller, so inputs are not in the right order
+            - merged: [1,1,3,1,1], [1,1,5,1,1], [[2]], [[6]]
+        - merge_sort([[1],[2,3,4]], [[1],4], [9], [[8,7,6]], [[4,4],4,4])
+            - merge_sort([[1],[2,3,4]], [[1],4])
+                - Compare [[1],[2,3,4]] vs [[1],4]
+                    - Compare [1] vs [1]
+                        - Compare 1 vs 1
+                    - Mixed types; convert 4 to [4] and retry comparison
+                        - Compare [2,3,4] vs [4]
+                            - Compare 2 vs 4
+                                - Left side is smaller, so inputs are in the right order
+                - ordered: [[1],[2,3,4]], [[1],4]
+                - merged: [[1],[2,3,4]], [[1],4]
+            - merge_sort([9], [[8,7,6]], [[4,4],4,4])
+                - merge_sort([9])
+                    - merged: [9]
+                - merge_sort([[8,7,6]], [[4,4],4,4])
+                    - Compare [[8,7,6]] vs [[4,4],4,4]
+                        - Compare [8,7,6] vs [4,4]
+                            - Compare 8 vs 4
+                                - Right side is smaller, so inputs are not in the right order
+                    - unordered: [[8,7,6]], [[4,4],4,4]
+                    - merged: [[4,4],4,4], [[8,7,6]]
+                - before merge: [9], [[4,4],4,4], [[8,7,6]]
+                - Compare [9] vs [[4,4],4,4]
+                    - Mixed types; convert 9 to [9] and retry comparison
+                        - Compare [9] vs [4,4]
+                            - Compare 9 vs 4
+                                - Right side is smaller, so inputs are not in the right order
+                - Compare [9] vs [[8,7,6]]
+                    - Mixed types; convert 9 to [9] and retry comparison
+                        - Compare [9] vs [8,7,6]
+                            - Compare 9 vs 8
+                                - Right side is smaller, so inputs are not in the right order
+                - merged: [[4,4],4,4], [[8,7,6]], [9]
+            - before merge: [[1],[2,3,4]], [[1],4], [[4,4],4,4], [[8,7,6]], [9]
+            - Compare [[1],[2,3,4]] vs [[4,4],4,4]
+                - Compare [1] vs [4,4]
+                    - Compare 1 vs 4
+                        - Left side is smaller, so inputs are in the right order
+            - Compare [[1],4] vs [[4,4],4,4]
+                - Compare [1] vs [4,4]
+                    - Compare 1 vs 4
+                        - Left side is smaller, so inputs are in the right order
+            - merged: [[1],[2,3,4]], [[1],4], [[4,4],4,4], [[8,7,6]], [9]
+        - before merge: [1,1,3,1,1], [1,1,5,1,1], [[2]], [[6]], [[1],[2,3,4]], [[1],4], [[4,4],4,4], [[8,7,6]], [9]
+        - Compare [1,1,3,1,1] vs [[1],[2,3,4]]
+            - Mixed types; convert 1 to [1] and retry comparison
+                - Compare [1] vs [1]
+                    - Compare 1 vs 1
+            - Mixed types; convert 1 to [1] and retry comparison
+                - Compare [1] vs [2,3,4]
+                    - Compare 1 vs 2
+                        - Left side is smaller, so inputs are in the right order
+        - Compare [1,1,5,1,1] vs [[1],[2,3,4]]
+            - Mixed types; convert 1 to [1] and retry comparison
+                - Compare [1] vs [1]
+                    - Compare 1 vs 1
+            - Mixed types; convert 1 to [1] and retry comparison
+                - Compare [1] vs [2,3,4]
+                    - Compare 1 vs 2
+                        - Left side is smaller, so inputs are in the right order
+        - Compare [[2]] vs [[1],[2,3,4]]
+            - Compare [2] vs [1]
+                - Compare 2 vs 1
+                    - Right side is smaller, so inputs are not in the right order
+        - Compare [[2]] vs [[1],4]
+            - Compare [2] vs [1]
+                - Compare 2 vs 1
+                    - Right side is smaller, so inputs are not in the right order
+        - Compare [[2]] vs [[4,4],4,4]
+            - Compare [2] vs [4,4]
+                - Compare 2 vs 4
+                    - Left side is smaller, so inputs are in the right order
+        - Compare [[6]] vs [[4,4],4,4]
+            - Compare [6] vs [4,4]
+                - Compare 6 vs 4
+                    - Right side is smaller, so inputs are not in the right order
+        - Compare [[6]] vs [[8,7,6]]
+            - Compare [6] vs [8,7,6]
+                - Compare 6 vs 8
+                    - Left side is smaller, so inputs are in the right order
+        - merged: [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [[2]], [[4,4],4,4], [[6]], [[8,7,6]], [9]
+    - merge_sort([[4,4],4,4,4], [7,7,7,7], [7,7,7], [], [3], [[[]]], [[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+        - merge_sort([[4,4],4,4,4], [7,7,7,7], [7,7,7], [])
+            - merge_sort([[4,4],4,4,4], [7,7,7,7])
+                - Compare [[4,4],4,4,4] vs [7,7,7,7]
+                    - Mixed types; convert 7 to [7] and retry comparison
+                        - Compare [4,4] vs [7]
+                            - Compare 4 vs 7
+                                - Left side is smaller, so inputs are in the right order
+                - ordered: [[4,4],4,4,4], [7,7,7,7]
+                - merged: [[4,4],4,4,4], [7,7,7,7]
+            - merge_sort([7,7,7], [])
+                - Compare [7,7,7] vs []
+                    - Right side ran out of items, so inputs are not in the right order
+                - unordered: [7,7,7], []
+                - merged: [], [7,7,7]
+            - before merge: [[4,4],4,4,4], [7,7,7,7], [], [7,7,7]
+            - Compare [[4,4],4,4,4] vs []
+                - Right side ran out of items, so inputs are not in the right order
+            - Compare [[4,4],4,4,4] vs [7,7,7]
+                - Mixed types; convert 7 to [7] and retry comparison
+                    - Compare [4,4] vs [7]
+                        - Compare 4 vs 7
+                            - Left side is smaller, so inputs are in the right order
+            - Compare [7,7,7,7] vs [7,7,7]
+                - Compare 7 vs 7
+                - Compare 7 vs 7
+                - Compare 7 vs 7
+                - Right side ran out of items, so inputs are not in the right order
+            - merged: [], [[4,4],4,4,4], [7,7,7], [7,7,7,7]
+        - merge_sort([3], [[[]]], [[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+            - merge_sort([3], [[[]]])
+                - Compare [3] vs [[[]]]
+                    - Mixed types; convert 3 to [3] and retry comparison
+                        - Compare [3] vs [[]]
+                            - Mixed types; convert 3 to [3] and retry comparison
+                                - Compare [3] vs []
+                                    - Right side ran out of items, so inputs are not in the right order
+                - unordered: [3], [[[]]]
+                - merged: [[[]]], [3]
+            - merge_sort([[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+                - merge_sort([[]])
+                    - merged: [[]]
+                - merge_sort([1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+                    - Compare [1,[2,[3,[4,[5,6,7]]]],8,9] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+                        - Compare 1 vs 1
+                        - Compare [2,[3,[4,[5,6,7]]]] vs [2,[3,[4,[5,6,0]]]]
+                            - Compare 2 vs 2
+                            - Compare [3,[4,[5,6,7]]] vs [3,[4,[5,6,0]]]
+                                - Compare 3 vs 3
+                                - Compare [4,[5,6,7]] vs [4,[5,6,0]]
+                                    - Compare 4 vs 4
+                                    - Compare [5,6,7] vs [5,6,0]
+                                        - Compare 5 vs 5
+                                        - Compare 6 vs 6
+                                        - Compare 7 vs 0
+                                            - Right side is smaller, so inputs are not in the right order
+                    - unordered: [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9]
+                    - merged: [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+                - before merge: [[]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+                - Compare [[]] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+                    - Mixed types; convert 1 to [1] and retry comparison
+                        - Compare [] vs [1]
+                            - Left side ran out of items, so inputs are in the right order
+                - merged: [[]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+            - before merge: [[[]]], [3], [[]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+            - Compare [[[]]] vs [[]]
+                - Compare [[]] vs []
+                    - Right side ran out of items, so inputs are not in the right order
+            - Compare [[[]]] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+                - Mixed types; convert 1 to [1] and retry comparison
+                    - Compare [[]] vs [1]
+                        - Mixed types; convert 1 to [1] and retry comparison
+                            - Compare [] vs [1]
+                                - Left side ran out of items, so inputs are in the right order
+            - Compare [3] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+                - Compare 3 vs 1
+                    - Right side is smaller, so inputs are not in the right order
+            - Compare [3] vs [1,[2,[3,[4,[5,6,7]]]],8,9]
+                - Compare 3 vs 1
+                    - Right side is smaller, so inputs are not in the right order
+            - merged: [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3]
+        - before merge: [], [[4,4],4,4,4], [7,7,7], [7,7,7,7], [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3]
+        - Compare [] vs [[]]
+            - Left side ran out of items, so inputs are in the right order
+        - Compare [[4,4],4,4,4] vs [[]]
+            - Compare [4,4] vs []
+                - Right side ran out of items, so inputs are not in the right order
+        - Compare [[4,4],4,4,4] vs [[[]]]
+            - Compare [4,4] vs [[]]
+                - Mixed types; convert 4 to [4] and retry comparison
+                    - Compare [4] vs []
+                        - Right side ran out of items, so inputs are not in the right order
+        - Compare [[4,4],4,4,4] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+            - Mixed types; convert 1 to [1] and retry comparison
+                - Compare [4,4] vs [1]
+                    - Compare 4 vs 1
+                        - Right side is smaller, so inputs are not in the right order
+        - Compare [[4,4],4,4,4] vs [1,[2,[3,[4,[5,6,7]]]],8,9]
+            - Mixed types; convert 1 to [1] and retry comparison
+                - Compare [4,4] vs [1]
+                    - Compare 4 vs 1
+                        - Right side is smaller, so inputs are not in the right order
+        - Compare [[4,4],4,4,4] vs [3]
+            - Mixed types; convert 3 to [3] and retry comparison
+                - Compare [4,4] vs [3]
+                    - Compare 4 vs 3
+                        - Right side is smaller, so inputs are not in the right order
+        - merged: [], [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3], [[4,4],4,4,4], [7,7,7], [7,7,7,7]
+    - before merge: [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [[2]], [[4,4],4,4], [[6]], [[8,7,6]], [9], [], [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3], [[4,4],4,4,4], [7,7,7], [7,7,7,7]
+    - Compare [1,1,3,1,1] vs []
+        - Right side ran out of items, so inputs are not in the right order
+    - Compare [1,1,3,1,1] vs [[]]
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs []
+                - Right side ran out of items, so inputs are not in the right order
+    - Compare [1,1,3,1,1] vs [[[]]]
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs [[]]
+                - Mixed types; convert 1 to [1] and retry comparison
+                    - Compare [1] vs []
+                        - Right side ran out of items, so inputs are not in the right order
+    - Compare [1,1,3,1,1] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+        - Compare 1 vs 1
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs [2,[3,[4,[5,6,0]]]]
+                - Compare 1 vs 2
+                    - Left side is smaller, so inputs are in the right order
+    - Compare [1,1,5,1,1] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+        - Compare 1 vs 1
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs [2,[3,[4,[5,6,0]]]]
+                - Compare 1 vs 2
+                    - Left side is smaller, so inputs are in the right order
+    - Compare [[1],[2,3,4]] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs [1]
+                - Compare 1 vs 1
+        - Compare [2,3,4] vs [2,[3,[4,[5,6,0]]]]
+            - Compare 2 vs 2
+            - Mixed types; convert 3 to [3] and retry comparison
+                - Compare [3] vs [3,[4,[5,6,0]]]
+                    - Compare 3 vs 3
+                    - Left side ran out of items, so inputs are in the right order
+    - Compare [[1],4] vs [1,[2,[3,[4,[5,6,0]]]],8,9]
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs [1]
+                - Compare 1 vs 1
+        - Mixed types; convert 4 to [4] and retry comparison
+            - Compare [4] vs [2,[3,[4,[5,6,0]]]]
+                - Compare 4 vs 2
+                    - Right side is smaller, so inputs are not in the right order
+    - Compare [[1],4] vs [1,[2,[3,[4,[5,6,7]]]],8,9]
+        - Mixed types; convert 1 to [1] and retry comparison
+            - Compare [1] vs [1]
+                - Compare 1 vs 1
+        - Mixed types; convert 4 to [4] and retry comparison
+            - Compare [4] vs [2,[3,[4,[5,6,7]]]]
+                - Compare 4 vs 2
+                    - Right side is smaller, so inputs are not in the right order
+    - Compare [[1],4] vs [3]
+        - Mixed types; convert 3 to [3] and retry comparison
+            - Compare [1] vs [3]
+                - Compare 1 vs 3
+                    - Left side is smaller, so inputs are in the right order
+    - Compare [[2]] vs [3]
+        - Mixed types; convert 3 to [3] and retry comparison
+            - Compare [2] vs [3]
+                - Compare 2 vs 3
+                    - Left side is smaller, so inputs are in the right order
+    - Compare [[4,4],4,4] vs [3]
+        - Mixed types; convert 3 to [3] and retry comparison
+            - Compare [4,4] vs [3]
+                - Compare 4 vs 3
+                    - Right side is smaller, so inputs are not in the right order
+    - Compare [[4,4],4,4] vs [[4,4],4,4,4]
+        - Compare [4,4] vs [4,4]
+            - Compare 4 vs 4
+            - Compare 4 vs 4
+        - Compare 4 vs 4
+        - Compare 4 vs 4
+        - Left side ran out of items, so inputs are in the right order
+    - Compare [[6]] vs [[4,4],4,4,4]
+        - Compare [6] vs [4,4]
+            - Compare 6 vs 4
+                - Right side is smaller, so inputs are not in the right order
+    - Compare [[6]] vs [7,7,7]
+        - Mixed types; convert 7 to [7] and retry comparison
+            - Compare [6] vs [7]
+                - Compare 6 vs 7
+                    - Left side is smaller, so inputs are in the right order
+    - Compare [[8,7,6]] vs [7,7,7]
+        - Mixed types; convert 7 to [7] and retry comparison
+            - Compare [8,7,6] vs [7]
+                - Compare 8 vs 7
+                    - Right side is smaller, so inputs are not in the right order
+    - Compare [[8,7,6]] vs [7,7,7,7]
+        - Mixed types; convert 7 to [7] and retry comparison
+            - Compare [8,7,6] vs [7]
+                - Compare 8 vs 7
+                    - Right side is smaller, so inputs are not in the right order
+    - merged: [], [[]], [[[]]], [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [[1],4], [[2]], [3], [[4,4],4,4], [[4,4],4,4,4], [[6]], [7,7,7], [7,7,7,7], [[8,7,6]], [9]
+Decoder key: 140

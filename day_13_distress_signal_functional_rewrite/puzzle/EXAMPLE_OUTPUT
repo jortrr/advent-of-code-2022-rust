@@ -1,0 +1,109 @@
+=== Signal ===
+== Pair 1 ==
+PacketPair { left: Packet { packet_data: [1,1,3,1,1] }, right: Packet { packet_data: [1,1,5,1,1] }, ordered: false }
+
+== Pair 2 ==
+PacketPair { left: Packet { packet_data: [[1],[2,3,4]] }, right: Packet { packet_data: [[1],4] }, ordered: false }
+
+== Pair 3 ==
+PacketPair { left: Packet { packet_data: [9] }, right: Packet { packet_data: [[8,7,6]] }, ordered: false }
+
+== Pair 4 ==
+PacketPair { left: Packet { packet_data: [[4,4],4,4] }, right: Packet { packet_data: [[4,4],4,4,4] }, ordered: false }
+
+== Pair 5 ==
+PacketPair { left: Packet { packet_data: [7,7,7,7] }, right: Packet { packet_data: [7,7,7] }, ordered: false }
+
+== Pair 6 ==
+PacketPair { left: Packet { packet_data: [] }, right: Packet { packet_data: [3] }, ordered: false }
+
+== Pair 7 ==
+PacketPair { left: Packet { packet_data: [[[]]] }, right: Packet { packet_data: [[]] }, ordered: false }
+
+== Pair 8 ==
+PacketPair { left: Packet { packet_data: [1,[2,[3,[4,[5,6,7]]]],8,9] }, right: Packet { packet_data: [1,[2,[3,[4,[5,6,0]]]],8,9] }, ordered: false }
+
+=== solve_part_one(signal) ===
+=== Signal ===
+== Pair 1 ==
+PacketPair { left: Packet { packet_data: [1,1,3,1,1] }, right: Packet { packet_data: [1,1,5,1,1] }, ordered: true }
+
+== Pair 2 ==
+PacketPair { left: Packet { packet_data: [[1],[2,3,4]] }, right: Packet { packet_data: [[1],4] }, ordered: true }
+
+== Pair 3 ==
+PacketPair { left: Packet { packet_data: [9] }, right: Packet { packet_data: [[8,7,6]] }, ordered: false }
+
+== Pair 4 ==
+PacketPair { left: Packet { packet_data: [[4,4],4,4] }, right: Packet { packet_data: [[4,4],4,4,4] }, ordered: true }
+
+== Pair 5 ==
+PacketPair { left: Packet { packet_data: [7,7,7,7] }, right: Packet { packet_data: [7,7,7] }, ordered: false }
+
+== Pair 6 ==
+PacketPair { left: Packet { packet_data: [] }, right: Packet { packet_data: [3] }, ordered: true }
+
+== Pair 7 ==
+PacketPair { left: Packet { packet_data: [[[]]] }, right: Packet { packet_data: [[]] }, ordered: false }
+
+== Pair 8 ==
+PacketPair { left: Packet { packet_data: [1,[2,[3,[4,[5,6,7]]]],8,9] }, right: Packet { packet_data: [1,[2,[3,[4,[5,6,0]]]],8,9] }, ordered: false }
+
+Sum of the indices of ordered pairs: 13
+=== solve_part_two(signal) ===
+- merge_sort([[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [9], [[8,7,6]], [[4,4],4,4], [[4,4],4,4,4], [7,7,7,7], [7,7,7], [], [3], [[[]]], [[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+    - merge_sort([[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [9], [[8,7,6]], [[4,4],4,4])
+        - merge_sort([[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1])
+            - merge_sort([[2]], [[6]])
+                - ordered: [[2]], [[6]]
+                - merged: [[2]], [[6]]
+            - merge_sort([1,1,3,1,1], [1,1,5,1,1])
+                - ordered: [1,1,3,1,1], [1,1,5,1,1]
+                - merged: [1,1,3,1,1], [1,1,5,1,1]
+            - before merge: [[2]], [[6]], [1,1,3,1,1], [1,1,5,1,1]
+            - merged: [1,1,3,1,1], [1,1,5,1,1], [[2]], [[6]]
+        - merge_sort([[1],[2,3,4]], [[1],4], [9], [[8,7,6]], [[4,4],4,4])
+            - merge_sort([[1],[2,3,4]], [[1],4])
+                - ordered: [[1],[2,3,4]], [[1],4]
+                - merged: [[1],[2,3,4]], [[1],4]
+            - merge_sort([9], [[8,7,6]], [[4,4],4,4])
+                - merge_sort([9])
+                    - merged: [9]
+                - merge_sort([[8,7,6]], [[4,4],4,4])
+                    - unordered: [[8,7,6]], [[4,4],4,4]
+                    - merged: [[4,4],4,4], [[8,7,6]]
+                - before merge: [9], [[4,4],4,4], [[8,7,6]]
+                - merged: [[4,4],4,4], [[8,7,6]], [9]
+            - before merge: [[1],[2,3,4]], [[1],4], [[4,4],4,4], [[8,7,6]], [9]
+            - merged: [[1],[2,3,4]], [[1],4], [[4,4],4,4], [[8,7,6]], [9]
+        - before merge: [1,1,3,1,1], [1,1,5,1,1], [[2]], [[6]], [[1],[2,3,4]], [[1],4], [[4,4],4,4], [[8,7,6]], [9]
+        - merged: [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [[2]], [[4,4],4,4], [[6]], [[8,7,6]], [9]
+    - merge_sort([[4,4],4,4,4], [7,7,7,7], [7,7,7], [], [3], [[[]]], [[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+        - merge_sort([[4,4],4,4,4], [7,7,7,7], [7,7,7], [])
+            - merge_sort([[4,4],4,4,4], [7,7,7,7])
+                - ordered: [[4,4],4,4,4], [7,7,7,7]
+                - merged: [[4,4],4,4,4], [7,7,7,7]
+            - merge_sort([7,7,7], [])
+                - unordered: [7,7,7], []
+                - merged: [], [7,7,7]
+            - before merge: [[4,4],4,4,4], [7,7,7,7], [], [7,7,7]
+            - merged: [], [[4,4],4,4,4], [7,7,7], [7,7,7,7]
+        - merge_sort([3], [[[]]], [[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+            - merge_sort([3], [[[]]])
+                - unordered: [3], [[[]]]
+                - merged: [[[]]], [3]
+            - merge_sort([[]], [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+                - merge_sort([[]])
+                    - merged: [[]]
+                - merge_sort([1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9])
+                    - unordered: [1,[2,[3,[4,[5,6,7]]]],8,9], [1,[2,[3,[4,[5,6,0]]]],8,9]
+                    - merged: [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+                - before merge: [[]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+                - merged: [[]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+            - before merge: [[[]]], [3], [[]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9]
+            - merged: [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3]
+        - before merge: [], [[4,4],4,4,4], [7,7,7], [7,7,7,7], [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3]
+        - merged: [], [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3], [[4,4],4,4,4], [7,7,7], [7,7,7,7]
+    - before merge: [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [[1],4], [[2]], [[4,4],4,4], [[6]], [[8,7,6]], [9], [], [[]], [[[]]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [3], [[4,4],4,4,4], [7,7,7], [7,7,7,7]
+    - merged: [], [[]], [[[]]], [1,1,3,1,1], [1,1,5,1,1], [[1],[2,3,4]], [1,[2,[3,[4,[5,6,0]]]],8,9], [1,[2,[3,[4,[5,6,7]]]],8,9], [[1],4], [[2]], [3], [[4,4],4,4], [[4,4],4,4,4], [[6]], [7,7,7], [7,7,7,7], [[8,7,6]], [9]
+Decoder key: 140
