@@ -1,6 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::cmp::{self, min, max};
-use std::hash::Hash;
+use std::cmp::{min, max};
 
 pub struct Cave {
     rocks: HashMap<u16, HashSet<u16>>,
@@ -15,7 +14,8 @@ impl Cave {
     /// Draws a path of rocks from (x1,y1) to (x2,y2)
     pub fn add_rock_path(&mut self, x1: u16, y1:u16, x2: u16, y2: u16) {
         println!("Drawing a rock path from ({},{}) to ({},{}).",x1,y1,x2,y2);
-        self.update_cave_borders(x1, y1, x2, y2);
+        self.update_cave_borders(x1, y1);
+        self.update_cave_borders(x2, y2);
         let min_x = min(x1,x2);
         let max_x = max(x1,x2);
         let min_y = min(y1,y2);
@@ -41,28 +41,23 @@ impl Cave {
     }
 
     /// Updates min_x, max_x, min_y, max_y
-    pub fn update_cave_borders(&mut self, x1: u16, y1: u16, x2: u16, y2: u16) {
-        self.min_x = min(self.min_x, x1);
-        self.min_x = min(self.min_x, x2);
-        self.max_x = max(self.max_x, x1);
-        self.max_x = max(self.max_x, x2);
-
-        self.min_y = min(self.min_y, y1);
-        self.min_y = min(self.min_y, y2);
-        self.max_y = max(self.max_y, y1);
-        self.max_y = max(self.max_y, y2);
+    pub fn update_cave_borders(&mut self, x: u16, y: u16) {
+        self.min_x = min(self.min_x, x);
+        self.max_x = max(self.max_x, x);
+        self.min_y = min(self.min_y, y);
+        self.max_y = max(self.max_y, y);
     }
 
     /// Print the Cave as a 2d grid, with '#' for rocks, 'o' for sand, '.' for air and '+' for the source of the sand.
-    pub fn print(&self) {
+    pub fn print(&self, floor: bool) {
         println!("Cave (min_x: {}, max_x: {}, min_y: {}, max_y: {})",self.min_x,self.max_x,self.min_y,self.max_y);
-        for y in 0..=self.max_y {
+        let mut max_y = self.max_y;
+        if floor {
+            max_y = max_y + 2;
+        }
+        for y in 0..=max_y {
             print!("{y}\t");
             for x in self.min_x..=self.max_x {
-                if x == 500 && y == 0 {
-                    print!("+"); //Source of the sand
-                    continue;
-                }
                 if self.rocks.contains_key(&x) {
                     if self.rocks.get(&x).unwrap().contains(&y) {
                         print!("#"); //Rock
@@ -75,6 +70,14 @@ impl Cave {
                         continue;
                     }
                 }
+                if x == 500 && y == 0 {
+                    print!("+"); //Source of the sand
+                    continue;
+                }
+                if y == max_y { //Floor
+                    print!("#"); //Rock
+                    continue;
+                }
                 print!("."); //Air
             }
             println!(); //New line
@@ -86,7 +89,12 @@ impl Cave {
     }
 
     /// Returns true if (x,y) is occupied by either rock or sand.
-    pub fn is_occupied(&self, x: u16, y: u16) -> bool {
+    pub fn is_occupied(&self, x: u16, y: u16, floor: bool) -> bool {
+        if floor {
+            if y == self.max_y + 2 {
+                return true;
+            }
+        }
         if self.rocks.contains_key(&x) {
             if self.rocks.get(&x).unwrap().contains(&y) {
                 return true;
@@ -105,26 +113,31 @@ impl Cave {
     /// - 2: If the tile immediately below is blocked (by rock or sand), the unit of sand attempts to instead move diagonally one step down and to the left. 
     /// - 3: If that tile is blocked, the unit of sand attempts to instead move diagonally one step down and to the right. 
     /// - 4: If all three possible destinations are blocked, the unit of sand comes to rest and no longer moves.
+    /// - 5: If floor is true, there is a floor from (-inf, self.max_y+2) to (inf, self.max_y+2)
     /// 
-    /// Returns true if the sand came to rest inside the borders of the cave, false otherwise.
-    pub fn simulate_sand(&mut self) -> bool {
+    /// Returns true if the sand came to rest inside the borders of the cave, false if the sand moved outside of the borders
+    /// of the cave, or if the sand is unable to leave the source.
+    pub fn simulate_sand(&mut self, floor: bool) -> bool {
         let mut x = 500;
         let mut y = 0;
         loop {
-            if x < self.min_x || x > self.max_x || y > self.max_y {
+            if self.is_occupied(x, y, floor) {
+                return false;
+            }
+            if !floor && (x < self.min_x || x > self.max_x || y > self.max_y) {
                 return false;
             }
 
-            if !self.is_occupied(x, y+1) { //1
+            if !self.is_occupied(x, y+1, floor) { //1
                 y = y+1;
                 continue;
             }
-            if !self.is_occupied(x-1, y+1) { //2
+            if !self.is_occupied(x-1, y+1, floor) { //2
                 x=x-1;
                 y=y+1;
                 continue;
             }
-            if !self.is_occupied(x+1, y+1){ //3 
+            if !self.is_occupied(x+1, y+1, floor){ //3 
                 x=x+1;
                 y=y+1;
                 continue;
@@ -134,7 +147,13 @@ impl Cave {
                 self.sand.insert(x, HashSet::new());
             }
             self.sand.get_mut(&x).unwrap().insert(y);
+            self.update_cave_borders(x, self.max_y);
             return true;
         }
+    }
+
+    /// Removes all sand from the cave
+    pub fn reset_sand(&mut self) {
+        self.sand = HashMap::new();
     }
 }

@@ -1,6 +1,6 @@
 //! Advent of Code 2022 day 14
 use std::{
-    env, fs,
+    fs,
     io::{self, BufRead}, thread,
 };
 
@@ -10,7 +10,7 @@ use structs::cave::Cave;
 mod structs;
 
 // File paths
-static INPUT_PATH: &str = "puzzle/INPUT";
+//static INPUT_PATH: &str = "puzzle/INPUT";
 static EXAMPLE_INPUT_PATH: &str = "puzzle/EXAMPLE_INPUT";
 static ANSWER_PART_ONE_PATH: &str = "puzzle/ANSWER_PART_ONE";
 static ANSWER_PART_TWO_PATH: &str = "puzzle/ANSWER_PART_TWO";
@@ -18,19 +18,22 @@ static ANSWER_PART_TWO_PATH: &str = "puzzle/ANSWER_PART_TWO";
 //Program main
 fn main() {
     //Create our main Advent of Code puzzle data structure from the INPUT file
-    let mut cave: Cave = parse(INPUT_PATH).unwrap();
+    let mut cave: Cave = parse(EXAMPLE_INPUT_PATH).unwrap();
 
     //Print the data structure that was created by parse()
-    cave.print();
+    cave.print(false);
 
     //Solve part one of the Advent of Code puzzle
     let answer_part_one = solve_part_one(&mut cave);
     fs::write(ANSWER_PART_ONE_PATH, format!("{}", answer_part_one)).unwrap();
     println!("answer_part_one: {}", answer_part_one);
 
+    cave.reset_sand();
+
     //Solve part two of the Advent of Code puzzle
     let answer_part_two = solve_part_two(&mut cave);
     fs::write(ANSWER_PART_TWO_PATH, format!("{}", answer_part_two)).unwrap();
+    println!("answer_part_two: {}", answer_part_two);
 }
 
 ///Parse the INPUT file at the relative input_file_path into our main data structure, HeightMap
@@ -61,17 +64,28 @@ fn parse(input_file_path: &str) -> Result<Cave, std::io::Error> {
 
 ///Solve part one of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_one(cave: &mut Cave) -> u16 {
+    println!("\n--- Part One ---\n");
+    thread::sleep(std::time::Duration::from_millis(2000));
     let mut t = 0;
-    while cave.simulate_sand() {
+    while cave.simulate_sand(false) {
         println!("t = {}",t);
-        cave.print();
+        cave.print(false);
         t+=1;
-        //thread::sleep(std::time::Duration::from_millis(1000));
+        thread::sleep(std::time::Duration::from_millis(100));
     }
     t
 }
 
 ///Solve part two of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_two(cave: &mut Cave) -> u16 {
-    0
+    println!("\n--- Part Two ---\n");
+    thread::sleep(std::time::Duration::from_millis(2000));
+    let mut t = 0;
+    while cave.simulate_sand(true) {
+        println!("t = {}",t);
+        cave.print(true);
+        t+=1;
+        thread::sleep(std::time::Duration::from_millis(100));
+    }
+    t
 }
