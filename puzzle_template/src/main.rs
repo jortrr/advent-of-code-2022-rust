@@ -46,10 +46,16 @@ fn parse(input_file_path: &str) -> Result<MainStruct, std::io::Error> {
 
 ///Solve part one of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_one(main_struct: &mut MainStruct) -> u16 {
+    let input_file: fs::File = fs::File::open(input_file_path)?;
+    let reader: io::BufReader<fs::File> = io::BufReader::new(input_file);
+
     0
 }
 
 ///Solve part two of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_two(main_struct: &mut MainStruct) -> u16 {
+    let input_file: fs::File = fs::File::open(input_file_path)?;
+    let reader: io::BufReader<fs::File> = io::BufReader::new(input_file);
+    
     0
 }
