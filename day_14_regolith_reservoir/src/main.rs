@@ -18,7 +18,7 @@ static ANSWER_PART_TWO_PATH: &str = "puzzle/ANSWER_PART_TWO";
 //Program main
 fn main() {
     //Create our main Advent of Code puzzle data structure from the INPUT file
-    let mut cave: Cave = parse(EXAMPLE_INPUT_PATH).unwrap();
+    let mut cave: Cave = parse(INPUT_PATH).unwrap();
 
     //Print the data structure that was created by parse()
     cave.print();
@@ -26,6 +26,7 @@ fn main() {
     //Solve part one of the Advent of Code puzzle
     let answer_part_one = solve_part_one(&mut cave);
     fs::write(ANSWER_PART_ONE_PATH, format!("{}", answer_part_one)).unwrap();
+    println!("answer_part_one: {}", answer_part_one);
 
     //Solve part two of the Advent of Code puzzle
     let answer_part_two = solve_part_two(&mut cave);
@@ -65,7 +66,7 @@ fn solve_part_one(cave: &mut Cave) -> u16 {
         println!("t = {}",t);
         cave.print();
         t+=1;
-        thread::sleep(std::time::Duration::from_millis(1000));
+        //thread::sleep(std::time::Duration::from_millis(1000));
     }
     t
 }
