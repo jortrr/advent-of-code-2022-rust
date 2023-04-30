@@ -1,7 +1,7 @@
 //! Advent of Code 2022 day 14
 use std::{
     env, fs,
-    io::{self, BufRead},
+    io::{self, BufRead}, thread,
 };
 
 use regex::Regex;
@@ -60,7 +60,14 @@ fn parse(input_file_path: &str) -> Result<Cave, std::io::Error> {
 
 ///Solve part one of the Advent of Code 2022 puzzle, returns the puzzle answer
 fn solve_part_one(cave: &mut Cave) -> u16 {
-    0
+    let mut t = 0;
+    while cave.simulate_sand() {
+        println!("t = {}",t);
+        cave.print();
+        t+=1;
+        thread::sleep(std::time::Duration::from_millis(1000));
+    }
+    t
 }
 
 ///Solve part two of the Advent of Code 2022 puzzle, returns the puzzle answer
